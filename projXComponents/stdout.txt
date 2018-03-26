@@ -1,0 +1,237 @@
+Pas2JS Compiler version 0.9.11+beta
+Copyright (c) 2017 Mattias Gaertner and others
+Example1Unit.pas(3,20) Warning: Illegal compiler directive "H"
+resources\xradiobtns.pas(88,35) Note: Virtual method "LinkLoadFromProperty" has a lower visibility (protected) than parent class TInterfaceObject (published)
+resources\xradiobtns.pas(89,33) Note: Virtual method "LinkSaveToProperty" has a lower visibility (protected) than parent class TInterfaceObject (published)
+resources\xmemo.pas(91,35) Note: Virtual method "LinkLoadFromProperty" has a lower visibility (protected) than parent class TInterfaceObject (published)
+resources\xmemo.pas(92,33) Note: Virtual method "LinkSaveToProperty" has a lower visibility (protected) than parent class TInterfaceObject (published)
+resources\xtabcontrol.pas(186,26) Warning: Method "SetBgColor" hides method of base type "TWrapperPanel" at resources\wrapperpanel.pas(163,25)
+resources\xtabcontrol.pas(187,27) Warning: Method "SetmyHeight" hides method of base type "TWrapperPanel" at resources\wrapperpanel.pas(164,26)
+resources\xtabcontrol.pas(188,26) Warning: Method "SetmyWidth" hides method of base type "TWrapperPanel" at resources\wrapperpanel.pas(165,25)
+resources\xtabcontrol.pas(221,25) Warning: Method "SetBgColor" hides method of base type "TWrapperPanel" at resources\wrapperpanel.pas(163,25)
+resources\xcheckbox.pas(75,35) Note: Virtual method "LinkLoadFromProperty" has a lower visibility (protected) than parent class TInterfaceObject (published)
+resources\xcheckbox.pas(76,33) Note: Virtual method "LinkSaveToProperty" has a lower visibility (protected) than parent class TInterfaceObject (published)
+resources\xeditbox.pas(85,35) Note: Virtual method "LinkLoadFromProperty" has a lower visibility (protected) than parent class TInterfaceObject (published)
+resources\xeditbox.pas(86,33) Note: Virtual method "LinkSaveToProperty" has a lower visibility (protected) than parent class TInterfaceObject (published)
+resources\stringutils.pas(35,27) Hint: Parameter "text" not used
+resources\stringutils.pas(97,21) Hint: Local function "CharReplace" not used
+resources\stringutils.pas(249,22) Hint: Local function "myFloatToStr" not used
+resources\stringutils.pas(254,22) Hint: Local function "mystrtoFloat" not used
+resources\popup.pas(10,22) Hint: Unit "Types" not used in Popup
+resources\popup.pas(10,38) Hint: Unit "StringUtils" not used in Popup
+resources\popup.pas(10,50) Hint: Unit "HTMLUtils" not used in Popup
+resources\popup.pas(13,42) Hint: Parameter "modal" not used
+resources\popup.pas(338,10) Hint: Function result does not seem to be set
+resources\popup.pas(46,29) Hint: Parameter "WindowId" not used
+resources\popup.pas(354,10) Hint: Function result does not seem to be set
+resources\popup.pas(47,42) Hint: Parameter "ParentName" not used
+resources\popup.pas(47,61) Hint: Parameter "EventType" not used
+resources\popup.pas(285,10) Hint: Function result does not seem to be set
+resources\popup.pas(314,10) Hint: Function result does not seem to be set
+resources\popup.pas(237,10) Hint: Function result does not seem to be set
+resources\popup.pas(206,3) Hint: Local variable "t" is assigned but never used
+resources\popup.pas(221,7) Hint: Local variable "l" is assigned but never used
+resources\popup.pas(287,3) Hint: Local variable "OnClickString" is assigned but never used
+resources\popup.pas(316,3) Hint: Local variable "ContentName" is assigned but never used
+resources\popup.pas(356,3) Hint: Local variable "UIRootNodeName" is assigned but never used
+resources\popup.pas(391,84) Hint: Parameter "position" not used
+resources\popup.pas(393,4) Hint: Local variable "ParentName" is assigned but never used
+resources\htmlutils.pas(34,10) Hint: Function result does not seem to be set
+resources\htmlutils.pas(15,36) Hint: Parameter "MyNode" not used
+resources\htmlutils.pas(15,50) Hint: Parameter "ob" not used
+resources\htmlutils.pas(258,10) Hint: Function result does not seem to be set
+resources\htmlutils.pas(17,46) Hint: Parameter "ParentNode" not used
+resources\htmlutils.pas(17,66) Hint: Parameter "ClassName" not used
+resources\htmlutils.pas(17,83) Hint: Parameter "ScreenObjectName" not used
+resources\htmlutils.pas(17,100) Hint: Parameter "ScreenObjectType" not used
+resources\htmlutils.pas(369,10) Hint: Function result does not seem to be set
+resources\htmlutils.pas(18,44) Hint: Parameter "ParentNode" not used
+resources\htmlutils.pas(18,64) Hint: Parameter "ClassName" not used
+resources\htmlutils.pas(18,81) Hint: Parameter "ScreenObjectName" not used
+resources\htmlutils.pas(18,98) Hint: Parameter "ScreenObjectType" not used
+resources\htmlutils.pas(18,114) Hint: Parameter "position" not used
+resources\htmlutils.pas(410,10) Hint: Function result does not seem to be set
+resources\htmlutils.pas(19,64) Hint: Parameter "ParentId" not used
+resources\htmlutils.pas(19,69) Hint: Parameter "myId" not used
+resources\htmlutils.pas(19,104) Hint: Parameter "HTMLString" not used
+resources\htmlutils.pas(350,10) Hint: Function result does not seem to be set
+resources\htmlutils.pas(21,28) Hint: Parameter "ObjID" not used
+resources\htmlutils.pas(21,46) Hint: Parameter "HadBorder" not used
+resources\htmlutils.pas(22,26) Hint: Parameter "ObjID" not used
+resources\htmlutils.pas(23,61) Hint: Parameter "showborder" not used
+resources\htmlutils.pas(32,6) Hint: Unit "Popup" not used in HTMLUtils
+resources\htmlutils.pas(35,5) Hint: Local variable "dummy" is assigned but never used
+resources\htmlutils.pas(135,5) Hint: Local variable "localscreentype" is assigned but never used
+resources\htmlutils.pas(136,3) Hint: Local variable "SystemRootNameVar" is assigned but never used
+resources\htmlutils.pas(161,20) Hint: Local function "CheckMatch" not used
+resources\htmlutils.pas(241,3) Hint: Local variable "hwStr" is assigned but never used
+resources\htmlutils.pas(242,3) Hint: Local variable "StyleHW" is assigned but never used
+resources\htmlutils.pas(260,5) Hint: Local variable "ObjName" is assigned but never used
+resources\htmlutils.pas(279,5) Hint: Local variable "SystemRootNameVar" is assigned but never used
+resources\htmlutils.pas(352,3) Hint: Local variable "innername" is assigned but never used
+resources\htmlutils.pas(371,3) Hint: Local variable "Border" is assigned but never used
+resources\htmlutils.pas(371,10) Hint: Local variable "BgColor" is assigned but never used
+resources\htmlutils.pas(413,3) Hint: Local variable "ShowBorder" is assigned but never used
+resources\htmlutils.pas(480,3) Hint: Local variable "HadBorder" is assigned but never used
+resources\events.pas(11,34) Hint: Unit "StringUtils" not used in Events
+resources\events.pas(100,23) Hint: Local procedure "DoSystemLoad" not used
+resources\events.pas(139,35) Hint: Parameter "myName" not used
+resources\events.pas(139,45) Hint: Parameter "EventType" not used
+resources\events.pas(139,59) Hint: Parameter "MyNode" not used
+resources\events.pas(139,77) Hint: Parameter "MyValue" not used
+resources\events.pas(170,11) Hint: Function result does not seem to be set
+resources\events.pas(189,3) Hint: Local variable "m" not used
+resources\wrapperpanel.pas(12,22) Hint: Unit "Types" not used in WrapperPanel
+resources\wrapperpanel.pas(12,29) Hint: Unit "TypInfo" not used in WrapperPanel
+resources\wrapperpanel.pas(468,3) Hint: Local variable "myname" not used
+resources\wrapperpanel.pas(706,5) Hint: Local variable "tmp" is assigned but never used
+resources\wrapperpanel.pas(1072,17) Hint: Local variable "MyLabelPos" is assigned but never used
+resources\wrapperpanel.pas(1212,3) Hint: Local variable "lp" not used
+resources\nodeutils.pas(127,38) Hint: Parameter "Sender" not used
+resources\nodeutils.pas(1622,10) Hint: Function result does not seem to be set
+resources\nodeutils.pas(233,3) Hint: Local variable "NodeString" not used
+resources\nodeutils.pas(251,3) Hint: Local variable "NodeString" not used
+resources\nodeutils.pas(426,33) Hint: Local function "CreateComponentDataNode" not used
+resources\nodeutils.pas(566,15) Hint: Local variable "dlm1" not used
+resources\nodeutils.pas(566,20) Hint: Local variable "dlm2" not used
+resources\nodeutils.pas(567,32) Hint: Local variable "numEvents" not used
+resources\nodeutils.pas(570,4) Hint: Local variable "EventsString" not used
+resources\nodeutils.pas(673,16) Hint: Local variable "eventstring" not used
+resources\nodeutils.pas(673,28) Hint: Local variable "fullstring" is assigned but never used
+resources\nodeutils.pas(674,3) Hint: Local variable "interfaceString" not used
+resources\nodeutils.pas(913,3) Hint: Local variable "myEventHandlers" not used
+resources\nodeutils.pas(943,5) Hint: Local variable "n" not used
+resources\nodeutils.pas(944,5) Hint: Local variable "TempChildNodes" not used
+resources\nodeutils.pas(1187,3) Hint: Local variable "myNode" is assigned but never used
+resources\nodeutils.pas(1214,10) Hint: Function result does not seem to be set
+resources\nodeutils.pas(1216,61) Hint: Local variable "mf" is assigned but never used
+resources\nodeutils.pas(1218,20) Hint: Local variable "AttribBits" not used
+resources\nodeutils.pas(1219,8) Hint: Local variable "l" not used
+resources\nodeutils.pas(1227,6) Hint: Local variable "myPopup" not used
+resources\nodeutils.pas(1320,3) Hint: Local variable "FormRootNode" not used
+resources\nodeutils.pas(1508,10) Hint: Function result does not seem to be set
+resources\nodeutils.pas(1510,5) Hint: Local variable "ObjName" is assigned but never used
+resources\nodeutils.pas(1574,5) Hint: Local variable "i" not used
+resources\nodeutils.pas(1574,7) Hint: Local variable "j" not used
+resources\nodeutils.pas(1623,7) Hint: Local variable "ArrayLength" not used
+resources\nodeutils.pas(1626,6) Hint: Local variable "StringList" is assigned but never used
+resources\nodeutils.pas(1627,6) Hint: Local variable "wasRecording" not used
+resources\nodeutils.pas(1628,6) Hint: Local variable "wasUndoRedoRecording" not used
+resources\nodeutils.pas(1629,6) Hint: Local variable "RootNodeName" is assigned but never used
+resources\xscrollbox.pas(15,21) Hint: Unit "TypInfo" not used in XScrollBox
+resources\xscrollbox.pas(16,13) Hint: Unit "StringUtils" not used in XScrollBox
+resources\xscrollbox.pas(16,25) Hint: Unit "HTMLUtils" not used in XScrollBox
+resources\xscrollbox.pas(103,5) Hint: Private field "TXScrollBox.FIsContainer$1" is never used
+resources\xscrollbox.pas(417,41) Hint: Parameter "ParentNode" not used
+resources\xscrollbox.pas(417,84) Hint: Parameter "position" not used
+resources\xscrollbox.pas(419,3) Hint: Local variable "ScrollType" is assigned but never used
+resources\xscrollbox.pas(420,3) Hint: Local variable "OnChangeString" not used
+resources\xscrollbox.pas(420,19) Hint: Local variable "OnClickString" is assigned but never used
+resources\xscrollbox.pas(420,34) Hint: Local variable "OnPasteString" not used
+resources\xscrollbox.pas(472,17) Hint: Local variable "MyLabelPos" is assigned but never used
+resources\xscrollbox.pas(690,3) Hint: Local variable "AVal" is assigned but never used
+resources\xbutton.pas(195,41) Hint: Parameter "ParentNode" not used
+resources\xbutton.pas(195,68) Hint: Parameter "ScreenObjectName" not used
+resources\xbutton.pas(195,84) Hint: Parameter "position" not used
+resources\xbutton.pas(197,3) Hint: Local variable "xItemText" is assigned but never used
+resources\xbutton.pas(197,13) Hint: Local variable "xEnabled" is assigned but never used
+resources\xbutton.pas(197,22) Hint: Local variable "marginString" is assigned but never used
+resources\xeditbox.pas(15,25) Hint: Unit "HTMLUtils" not used in XEditBox
+resources\xeditbox.pas(251,41) Hint: Parameter "ParentNode" not used
+resources\xeditbox.pas(251,84) Hint: Parameter "position" not used
+resources\xeditbox.pas(253,3) Hint: Local variable "ItemValue" is assigned but never used
+resources\xeditbox.pas(253,13) Hint: Local variable "LabelText" is assigned but never used
+resources\xeditbox.pas(253,23) Hint: Local variable "LabelPos" not used
+resources\xeditbox.pas(254,3) Hint: Local variable "ReadOnly" is assigned but never used
+resources\xeditbox.pas(255,3) Hint: Local variable "OnChangeString" is assigned but never used
+resources\xeditbox.pas(255,19) Hint: Local variable "OnClickString" is assigned but never used
+resources\xeditbox.pas(255,34) Hint: Local variable "OnPasteString" is assigned but never used
+resources\xcheckbox.pas(14,25) Hint: Unit "HTMLUtils" not used in XCheckBox
+resources\xcheckbox.pas(248,41) Hint: Parameter "ParentNode" not used
+resources\xcheckbox.pas(248,84) Hint: Parameter "position" not used
+resources\xcheckbox.pas(250,3) Hint: Local variable "Checked" is assigned but never used
+resources\xcheckbox.pas(250,11) Hint: Local variable "ReadOnly" is assigned but never used
+resources\xcheckbox.pas(250,20) Hint: Local variable "LabelText" is assigned but never used
+resources\xcheckbox.pas(250,30) Hint: Local variable "LabelPos" not used
+resources\xcheckbox.pas(251,3) Hint: Local variable "OnChangeString" not used
+resources\xcheckbox.pas(251,19) Hint: Local variable "OnClickString" is assigned but never used
+resources\xcheckbox.pas(251,34) Hint: Local variable "OnPasteString" not used
+resources\xhbox.pas(14,22) Hint: Unit "Types" not used in XHBox
+resources\xhbox.pas(15,25) Hint: Unit "HTMLUtils" not used in XHBox
+resources\xhbox.pas(153,41) Hint: Parameter "ParentNode" not used
+resources\xhbox.pas(153,68) Hint: Parameter "ScreenObjectName" not used
+resources\xhbox.pas(153,84) Hint: Parameter "position" not used
+resources\xhbox.pas(155,3) Hint: Local variable "ShowBorder" is assigned but never used
+resources\xhyperlink.pas(15,21) Hint: Unit "TypInfo" not used in XHyperLink
+resources\xhyperlink.pas(16,13) Hint: Unit "StringUtils" not used in XHyperLink
+resources\xhyperlink.pas(16,25) Hint: Unit "HTMLUtils" not used in XHyperLink
+resources\xhyperlink.pas(202,41) Hint: Parameter "ParentNode" not used
+resources\xhyperlink.pas(202,84) Hint: Parameter "position" not used
+resources\xhyperlink.pas(204,3) Hint: Local variable "LabelCaption" is assigned but never used
+resources\xhyperlink.pas(205,3) Hint: Local variable "OnClickString" is assigned but never used
+resources\xtabcontrol.pas(15,21) Hint: Unit "TypInfo" not used in XTabControl
+resources\xtabcontrol.pas(16,13) Hint: Unit "StringUtils" not used in XTabControl
+resources\xtabcontrol.pas(789,10) Hint: Function result does not seem to be set
+resources\xtabcontrol.pas(674,45) Hint: Parameter "ParentNode" not used
+resources\xtabcontrol.pas(674,88) Hint: Parameter "position" not used
+resources\xtabcontrol.pas(676,3) Hint: Local variable "OnChangeString" not used
+resources\xtabcontrol.pas(676,19) Hint: Local variable "OnClickString" is assigned but never used
+resources\xtabcontrol.pas(676,34) Hint: Local variable "OnPasteString" not used
+resources\xtabcontrol.pas(756,25) Hint: Parameter "TabName" not used
+resources\xtabcontrol.pas(756,40) Hint: Parameter "TabControlName" not used
+resources\xtabcontrol.pas(756,10) Hint: Function result does not seem to be set
+resources\xtabcontrol.pas(799,43) Hint: Parameter "ParentNode" not used
+resources\xtabcontrol.pas(799,86) Hint: Parameter "position" not used
+resources\xtabcontrol.pas(801,3) Hint: Local variable "ParentName" is assigned but never used
+resources\xtabcontrol.pas(801,14) Hint: Local variable "PageCaption" is assigned but never used
+resources\xtabcontrol.pas(802,3) Hint: Local variable "OnClickString" is assigned but never used
+resources\xtabcontrol.pas(861,3) Hint: Local variable "myname" not used
+resources\xtabcontrol.pas(867,3) Hint: Local variable "myname" not used
+resources\xtabcontrol.pas(1494,17) Hint: Local variable "MyLabelPos" is assigned but never used
+resources\xvbox.pas(13,22) Hint: Unit "Types" not used in XVBox
+resources\xvbox.pas(14,25) Hint: Unit "HTMLUtils" not used in XVBox
+resources\xvbox.pas(135,41) Hint: Parameter "ParentNode" not used
+resources\xvbox.pas(135,68) Hint: Parameter "ScreenObjectName" not used
+resources\xvbox.pas(135,84) Hint: Parameter "position" not used
+resources\xvbox.pas(137,3) Hint: Local variable "ShowBorder" not used
+resources\xvbox.pas(138,3) Hint: Local variable "myObj" not used
+resources\xmemo.pas(15,25) Hint: Unit "HTMLUtils" not used in XMemo
+resources\xmemo.pas(265,41) Hint: Parameter "ParentNode" not used
+resources\xmemo.pas(265,84) Hint: Parameter "position" not used
+resources\xmemo.pas(267,3) Hint: Local variable "ItemValue" is assigned but never used
+resources\xmemo.pas(267,13) Hint: Local variable "LabelText" is assigned but never used
+resources\xmemo.pas(267,23) Hint: Local variable "LabelPos" is assigned but never used
+resources\xmemo.pas(268,3) Hint: Local variable "ReadOnly" is assigned but never used
+resources\xmemo.pas(270,3) Hint: Local variable "OnChangeString" is assigned but never used
+resources\xmemo.pas(270,19) Hint: Local variable "OnClickString" is assigned but never used
+resources\xmemo.pas(270,34) Hint: Local variable "OnPasteString" is assigned but never used
+resources\xradiobtns.pas(14,25) Hint: Unit "HTMLUtils" not used in XRadioBtns
+resources\xradiobtns.pas(16,55) Hint: Parameter "OptionList" not used
+resources\xradiobtns.pas(256,10) Hint: Function result does not seem to be set
+resources\xradiobtns.pas(258,3) Hint: Local variable "OnChangeString" is assigned but never used
+resources\xradiobtns.pas(258,19) Hint: Local variable "ItemValue" is assigned but never used
+resources\xradiobtns.pas(258,29) Hint: Local variable "ReadOnly" is assigned but never used
+resources\xradiobtns.pas(258,45) Hint: Local variable "quot" is assigned but never used
+resources\xradiobtns.pas(292,41) Hint: Parameter "ParentNode" not used
+resources\xradiobtns.pas(292,84) Hint: Parameter "position" not used
+resources\xradiobtns.pas(294,3) Hint: Local variable "myCaption" is assigned but never used
+resources\xradiobtns.pas(294,13) Hint: Local variable "ItemValue" not used
+resources\xradiobtns.pas(294,23) Hint: Local variable "OptionList" is assigned but never used
+resources\xradiobtns.pas(295,3) Hint: Local variable "OnClickString" is assigned but never used
+resources\xradiobtns.pas(398,3) Hint: Local variable "NewIndex" not used
+resources\xradiobtns.pas(421,3) Hint: Local variable "NewIndex" not used
+resources\xradiobtns.pas(422,3) Hint: Local variable "myName" is assigned but never used
+Example1Unit.pas(64,45) Hint: Parameter "nodeID" not used
+Example1Unit.pas(64,65) Hint: Parameter "myNode" not used
+Example1Unit.pas(65,12) Hint: Parameter "myValue" not used
+Example1Unit.pas(66,45) Hint: Parameter "nodeID" not used
+Example1Unit.pas(66,65) Hint: Parameter "myNode" not used
+Example1Unit.pas(67,12) Hint: Parameter "myValue" not used
+Example1Unit.pas(68,41) Hint: Parameter "nodeID" not used
+Example1Unit.pas(68,61) Hint: Parameter "myNode" not used
+Example1Unit.pas(69,12) Hint: Parameter "myValue" not used
+Example1Unit.pas(70,43) Hint: Parameter "nodeID" not used
+Example1Unit.pas(70,63) Hint: Parameter "myNode" not used
+Example1Unit.pas(72,43) Hint: Parameter "nodeID" not used
+Example1Unit.pas(72,63) Hint: Parameter "myNode" not used
+Info: 19907 lines in 24 files compiled, 2.3 sec
