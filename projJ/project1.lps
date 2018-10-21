@@ -1,0 +1,430 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <ProjectSession>
+    <PathDelim Value="\"/>
+    <Version Value="11"/>
+    <BuildModes Active="Default"/>
+    <Units Count="48">
+      <Unit0>
+        <Filename Value="project1.lpr"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="55"/>
+        <CursorPos X="31" Y="68"/>
+        <UsageCount Value="60"/>
+      </Unit0>
+      <Unit1>
+        <Filename Value="www\index.html"/>
+        <IsPartOfProject Value="True"/>
+        <CustomData Count="1">
+          <Item0 Name="PasJSIsProjectHTMLFile" Value="1"/>
+        </CustomData>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="51" Y="6"/>
+        <UsageCount Value="60"/>
+        <DefaultSyntaxHighlighter Value="HTML"/>
+      </Unit1>
+      <Unit2>
+        <Filename Value="umain.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="uMain"/>
+        <EditorIndex Value="1"/>
+        <UsageCount Value="60"/>
+        <Loaded Value="True"/>
+      </Unit2>
+      <Unit3>
+        <Filename Value="lib\jelement.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="jElement"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="301"/>
+        <CursorPos X="34" Y="17"/>
+        <UsageCount Value="60"/>
+      </Unit3>
+      <Unit4>
+        <Filename Value="lib\japplication.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="jApplication"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="-1"/>
+        <TopLine Value="80"/>
+        <CursorPos X="14" Y="94"/>
+        <UsageCount Value="60"/>
+      </Unit4>
+      <Unit5>
+        <Filename Value="lib\jform.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="jForm"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="16" Y="66"/>
+        <UsageCount Value="60"/>
+      </Unit5>
+      <Unit6>
+        <Filename Value="lib\jpanel.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="jPanel"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="3" Y="11"/>
+        <UsageCount Value="60"/>
+      </Unit6>
+      <Unit7>
+        <Filename Value="lib\jbutton.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="jButton"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="14" Y="11"/>
+        <UsageCount Value="60"/>
+      </Unit7>
+      <Unit8>
+        <Filename Value="lib\jimage.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="jImage"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="60"/>
+      </Unit8>
+      <Unit9>
+        <Filename Value="lib\jglobals.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="jGlobals"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos Y="11"/>
+        <UsageCount Value="60"/>
+      </Unit9>
+      <Unit10>
+        <Filename Value="lib\jtoolbar.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="jToolBar"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="60"/>
+      </Unit10>
+      <Unit11>
+        <Filename Value="lib\jlistbox.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="jListBox"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="120"/>
+        <CursorPos X="28" Y="132"/>
+        <UsageCount Value="60"/>
+      </Unit11>
+      <Unit12>
+        <Filename Value="lib\jprogressbar.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="jProgressBar"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="60"/>
+      </Unit12>
+      <Unit13>
+        <Filename Value="lib\jvideo.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="jVideo"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="2"/>
+        <CursorPos X="12"/>
+        <UsageCount Value="60"/>
+      </Unit13>
+      <Unit14>
+        <Filename Value="lib\janchor.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="JAnchor"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="15" Y="11"/>
+        <UsageCount Value="60"/>
+      </Unit14>
+      <Unit15>
+        <Filename Value="lib\jloader.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="JLoader"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="13"/>
+        <UsageCount Value="60"/>
+      </Unit15>
+      <Unit16>
+        <Filename Value="lib\jiframe.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="jIframe"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="4"/>
+        <CursorPos Y="24"/>
+        <UsageCount Value="60"/>
+      </Unit16>
+      <Unit17>
+        <Filename Value="lib\jstreetview.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="jStreetView"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="19"/>
+        <CursorPos X="42" Y="24"/>
+        <UsageCount Value="60"/>
+      </Unit17>
+      <Unit18>
+        <Filename Value="lib\jgrid.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="jGrid"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="324"/>
+        <CursorPos X="78" Y="184"/>
+        <UsageCount Value="60"/>
+      </Unit18>
+      <Unit19>
+        <Filename Value="lib\jstringtable.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="jStringTable"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="55"/>
+        <CursorPos X="24" Y="49"/>
+        <UsageCount Value="60"/>
+      </Unit19>
+      <Unit20>
+        <Filename Value="lib\jcanvas.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="jCanvas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="7"/>
+        <CursorPos X="65" Y="27"/>
+        <UsageCount Value="60"/>
+      </Unit20>
+      <Unit21>
+        <Filename Value="lib\jtreeview.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="jTreeView"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="211"/>
+        <CursorPos X="37" Y="223"/>
+        <UsageCount Value="60"/>
+      </Unit21>
+      <Unit22>
+        <Filename Value="lib\jcheckbox.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="jCheckBox"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="47"/>
+        <CursorPos X="35" Y="59"/>
+        <UsageCount Value="60"/>
+      </Unit22>
+      <Unit23>
+        <Filename Value="lib\jspinner.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="jSpinner"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="92"/>
+        <CursorPos X="3" Y="109"/>
+        <UsageCount Value="60"/>
+      </Unit23>
+      <Unit24>
+        <Filename Value="lib\jfieldset.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="jFieldSet"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="22"/>
+        <CursorPos X="19" Y="36"/>
+        <UsageCount Value="60"/>
+      </Unit24>
+      <Unit25>
+        <Filename Value="lib\jradiobutton.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="jRadioButton"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="58"/>
+        <CursorPos X="37" Y="70"/>
+        <UsageCount Value="60"/>
+      </Unit25>
+      <Unit26>
+        <Filename Value="lib\jinput.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="jInput"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="22" Y="8"/>
+        <UsageCount Value="60"/>
+      </Unit26>
+      <Unit27>
+        <Filename Value="lib\jflipscroll.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="jFlipScroll"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="46"/>
+        <CursorPos X="32" Y="28"/>
+        <UsageCount Value="60"/>
+      </Unit27>
+      <Unit28>
+        <Filename Value="lib\jdialog.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="jDialog"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="64"/>
+        <CursorPos X="8" Y="76"/>
+        <UsageCount Value="60"/>
+      </Unit28>
+      <Unit29>
+        <Filename Value="lib\jwindow.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="JWindow"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="85"/>
+        <CursorPos X="24" Y="100"/>
+        <UsageCount Value="60"/>
+      </Unit29>
+      <Unit30>
+        <Filename Value="lib\jneuralnet.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="jNeuralNet"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="40" Y="8"/>
+        <UsageCount Value="60"/>
+      </Unit30>
+      <Unit31>
+        <Filename Value="lib\jwebpagebuilder.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="jWebPageBuilder"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="40" Y="8"/>
+        <UsageCount Value="60"/>
+      </Unit31>
+      <Unit32>
+        <Filename Value="lib\jselect.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="JSelect"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="56"/>
+        <CursorPos X="14" Y="69"/>
+        <UsageCount Value="56"/>
+      </Unit32>
+      <Unit33>
+        <Filename Value="lib\jtextarea.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="JTextArea"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="4"/>
+        <CursorPos X="34" Y="17"/>
+        <UsageCount Value="56"/>
+      </Unit33>
+      <Unit34>
+        <Filename Value="lib\jobjecttable.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="JObjectTable"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="113"/>
+        <CursorPos X="86" Y="127"/>
+        <UsageCount Value="54"/>
+      </Unit34>
+      <Unit35>
+        <Filename Value="form1.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="Form1"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="2"/>
+        <TopLine Value="261"/>
+        <CursorPos X="10" Y="205"/>
+        <UsageCount Value="50"/>
+        <Loaded Value="True"/>
+      </Unit35>
+      <Unit36>
+        <Filename Value="lib\jsplitter.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="JSplitter"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="91"/>
+        <CursorPos Y="32"/>
+        <UsageCount Value="42"/>
+      </Unit36>
+      <Unit37>
+        <Filename Value="lib\umutationobserver.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="uMutationObserver"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="23" Y="19"/>
+        <UsageCount Value="39"/>
+      </Unit37>
+      <Unit38>
+        <Filename Value="..\..\pas2js-windows-0.9.25\packages\rtl\web.pas"/>
+        <UnitName Value="Web"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="19" Y="22"/>
+        <UsageCount Value="25"/>
+      </Unit38>
+      <Unit39>
+        <Filename Value="..\..\pas2js-windows-0.9.25\packages\rtl\js.pas"/>
+        <UnitName Value="JS"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="318"/>
+        <CursorPos X="14" Y="337"/>
+        <UsageCount Value="21"/>
+      </Unit39>
+      <Unit40>
+        <Filename Value="..\..\pas2js-windows-0.9.25\packages\rtl\types.pas"/>
+        <UnitName Value="Types"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="186"/>
+        <CursorPos X="26" Y="8"/>
+        <UsageCount Value="10"/>
+      </Unit40>
+      <Unit41>
+        <Filename Value="..\..\pas2js-windows-0.9.25\packages\rtl\sysutils.pas"/>
+        <UnitName Value="SysUtils"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="251"/>
+        <CursorPos X="56" Y="259"/>
+        <UsageCount Value="9"/>
+      </Unit41>
+      <Unit42>
+        <Filename Value="..\..\pas2js-windows-0.9.25\packages\rtl\system.pas"/>
+        <UnitName Value="System"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="28"/>
+        <CursorPos X="3" Y="45"/>
+        <UsageCount Value="11"/>
+      </Unit42>
+      <Unit43>
+        <Filename Value="..\..\pas2js-windows-0.9.25\packages\rtl\classes.pas"/>
+        <UnitName Value="Classes"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="543"/>
+        <CursorPos X="59" Y="589"/>
+        <UsageCount Value="11"/>
+      </Unit43>
+      <Unit44>
+        <Filename Value="..\TMSWEBProject\customControl\component\mycustomcontrol.pas"/>
+        <UnitName Value="MyCustomControl"/>
+        <TopLine Value="72"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit44>
+      <Unit45>
+        <Filename Value="C:\lazarus\examples\pascalstream\CopyAsPasPkg\copyaspasdemounit1.pas"/>
+        <UnitName Value="CopyAsPasDemoUnit1"/>
+        <EditorIndex Value="3"/>
+        <TopLine Value="19"/>
+        <CursorPos Y="43"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit45>
+      <Unit46>
+        <Filename Value="C:\lazarus\examples\pascalstream\CopyAsPasPkg\regappforms.pp"/>
+        <EditorIndex Value="4"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit46>
+      <Unit47>
+        <Filename Value="C:\lazarus\examples\pascalstream\CopyAsPasPkg\pas2js_descriptors.pas"/>
+        <EditorIndex Value="5"/>
+        <TopLine Value="481"/>
+        <CursorPos X="36" Y="13"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit47>
+    </Units>
+    <JumpHistory Count="2" HistoryIndex="1">
+      <Position1>
+        <Filename Value="C:\lazarus\examples\pascalstream\CopyAsPasPkg\copyaspasdemounit1.pas"/>
+        <Caret TopLine="362"/>
+      </Position1>
+      <Position2>
+        <Filename Value="C:\lazarus\examples\pascalstream\CopyAsPasPkg\copyaspasdemounit1.pas"/>
+        <Caret Line="246" Column="10" TopLine="230"/>
+      </Position2>
+    </JumpHistory>
+    <RunParams>
+      <FormatVersion Value="2"/>
+      <Modes Count="0" ActiveMode=""/>
+    </RunParams>
+  </ProjectSession>
+</CONFIG>

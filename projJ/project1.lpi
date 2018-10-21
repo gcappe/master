@@ -1,0 +1,262 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <ProjectOptions>
+    <Version Value="11"/>
+    <PathDelim Value="\"/>
+    <General>
+      <Flags>
+        <MainUnitHasCreateFormStatements Value="False"/>
+        <MainUnitHasTitleStatement Value="False"/>
+        <MainUnitHasScaledStatement Value="False"/>
+        <Runnable Value="False"/>
+      </Flags>
+      <SessionStorage Value="InProjectDir"/>
+      <MainUnit Value="0"/>
+      <Title Value="project1"/>
+      <UseAppBundle Value="False"/>
+      <ResourceType Value="res"/>
+    </General>
+    <CustomData Count="3">
+      <Item0 Name="MaintainHTML" Value="1"/>
+      <Item1 Name="PasJSWebBrowserProject" Value="1"/>
+      <Item2 Name="RunAtReady" Value="1"/>
+    </CustomData>
+    <BuildModes Count="1">
+      <Item1 Name="Default" Default="True"/>
+    </BuildModes>
+    <PublishOptions>
+      <Version Value="2"/>
+    </PublishOptions>
+    <RunParams>
+      <FormatVersion Value="2"/>
+      <Modes Count="0"/>
+    </RunParams>
+    <RequiredPackages Count="1">
+      <Item1>
+        <PackageName Value="pas2js_rtl"/>
+      </Item1>
+    </RequiredPackages>
+    <Units Count="38">
+      <Unit0>
+        <Filename Value="project1.lpr"/>
+        <IsPartOfProject Value="True"/>
+      </Unit0>
+      <Unit1>
+        <Filename Value="www\index.html"/>
+        <IsPartOfProject Value="True"/>
+        <CustomData Count="1">
+          <Item0 Name="PasJSIsProjectHTMLFile" Value="1"/>
+        </CustomData>
+      </Unit1>
+      <Unit2>
+        <Filename Value="umain.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="uMain"/>
+      </Unit2>
+      <Unit3>
+        <Filename Value="lib\jelement.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="jElement"/>
+      </Unit3>
+      <Unit4>
+        <Filename Value="lib\japplication.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="jApplication"/>
+      </Unit4>
+      <Unit5>
+        <Filename Value="lib\jform.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="jForm"/>
+      </Unit5>
+      <Unit6>
+        <Filename Value="lib\jpanel.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="jPanel"/>
+      </Unit6>
+      <Unit7>
+        <Filename Value="lib\jbutton.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="jButton"/>
+      </Unit7>
+      <Unit8>
+        <Filename Value="lib\jimage.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="jImage"/>
+      </Unit8>
+      <Unit9>
+        <Filename Value="lib\jglobals.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="jGlobals"/>
+      </Unit9>
+      <Unit10>
+        <Filename Value="lib\jtoolbar.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="jToolBar"/>
+      </Unit10>
+      <Unit11>
+        <Filename Value="lib\jlistbox.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="jListBox"/>
+      </Unit11>
+      <Unit12>
+        <Filename Value="lib\jprogressbar.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="jProgressBar"/>
+      </Unit12>
+      <Unit13>
+        <Filename Value="lib\jvideo.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="jVideo"/>
+      </Unit13>
+      <Unit14>
+        <Filename Value="lib\janchor.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="JAnchor"/>
+      </Unit14>
+      <Unit15>
+        <Filename Value="lib\jloader.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="JLoader"/>
+      </Unit15>
+      <Unit16>
+        <Filename Value="lib\jiframe.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="jIframe"/>
+      </Unit16>
+      <Unit17>
+        <Filename Value="lib\jstreetview.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="jStreetView"/>
+      </Unit17>
+      <Unit18>
+        <Filename Value="lib\jgrid.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="jGrid"/>
+      </Unit18>
+      <Unit19>
+        <Filename Value="lib\jstringtable.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="jStringTable"/>
+      </Unit19>
+      <Unit20>
+        <Filename Value="lib\jcanvas.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="jCanvas"/>
+      </Unit20>
+      <Unit21>
+        <Filename Value="lib\jtreeview.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="jTreeView"/>
+      </Unit21>
+      <Unit22>
+        <Filename Value="lib\jcheckbox.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="jCheckBox"/>
+      </Unit22>
+      <Unit23>
+        <Filename Value="lib\jspinner.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="jSpinner"/>
+      </Unit23>
+      <Unit24>
+        <Filename Value="lib\jfieldset.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="jFieldSet"/>
+      </Unit24>
+      <Unit25>
+        <Filename Value="lib\jradiobutton.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="jRadioButton"/>
+      </Unit25>
+      <Unit26>
+        <Filename Value="lib\jinput.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="jInput"/>
+      </Unit26>
+      <Unit27>
+        <Filename Value="lib\jflipscroll.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="jFlipScroll"/>
+      </Unit27>
+      <Unit28>
+        <Filename Value="lib\jdialog.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="jDialog"/>
+      </Unit28>
+      <Unit29>
+        <Filename Value="lib\jwindow.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="JWindow"/>
+      </Unit29>
+      <Unit30>
+        <Filename Value="lib\jneuralnet.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="jNeuralNet"/>
+      </Unit30>
+      <Unit31>
+        <Filename Value="lib\jwebpagebuilder.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="jWebPageBuilder"/>
+      </Unit31>
+      <Unit32>
+        <Filename Value="lib\jselect.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="JSelect"/>
+      </Unit32>
+      <Unit33>
+        <Filename Value="lib\jtextarea.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="JTextArea"/>
+      </Unit33>
+      <Unit34>
+        <Filename Value="lib\jobjecttable.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="JObjectTable"/>
+      </Unit34>
+      <Unit35>
+        <Filename Value="form1.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="Form1"/>
+      </Unit35>
+      <Unit36>
+        <Filename Value="lib\jsplitter.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="JSplitter"/>
+      </Unit36>
+      <Unit37>
+        <Filename Value="lib\umutationobserver.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="uMutationObserver"/>
+      </Unit37>
+    </Units>
+  </ProjectOptions>
+  <CompilerOptions>
+    <Version Value="11"/>
+    <PathDelim Value="\"/>
+    <SearchPaths>
+      <IncludeFiles Value="$(ProjOutDir)"/>
+      <OtherUnitFiles Value="lib;C:\fpc2js\pas2js-windows-0.9.25\packages\rtl\"/>
+    </SearchPaths>
+    <Other>
+      <ExecuteBefore>
+        <Command Value="$MakeExe(IDE,pas2js) -Jirtl.js -Jc -Jminclude -Tbrowser -Fu$(ProjUnitPath) $Name($(ProjFile)) -FE$(ProjOutDir)\www"/>
+        <ScanForFPCMsgs Value="True"/>
+        <ScanForMakeMsgs Value="True"/>
+      </ExecuteBefore>
+    </Other>
+    <CompileReasons Compile="False" Build="False" Run="False"/>
+  </CompilerOptions>
+  <Debugging>
+    <Exceptions Count="3">
+      <Item1>
+        <Name Value="EAbort"/>
+      </Item1>
+      <Item2>
+        <Name Value="ECodetoolError"/>
+      </Item2>
+      <Item3>
+        <Name Value="EFOpenError"/>
+      </Item3>
+    </Exceptions>
+  </Debugging>
+</CONFIG>
