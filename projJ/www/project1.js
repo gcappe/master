@@ -490,7 +490,7 @@ var rtl = {
         var intfname = names[i];
         var fnname = map[intfname];
         if (!fnname) fnname = intfname;
-        //console.log('addIntf: intftype='+t.$name+' index='+i+' intfname="'+intfname+'" fnname="'+fnname+'" proc='+typeof(fn));
+        //console.log('addIntf: intftype='+t.$name+' index='+i+' intfname="'+intfname+'" fnname="'+fnname+'" old='+typeof(item[intfname]));
         item[intfname] = jmp(aclass[fnname]);
       }
       t = Object.getPrototypeOf(t);
@@ -507,7 +507,7 @@ var rtl = {
     if (!item) return null;
     // check delegation
     //console.log('getIntfG: obj='+obj.$classname+' guid='+guid+' query='+query+' item='+typeof(item));
-    if (typeof item === 'function') return item.call(obj); // COM: contains _AddRef
+    if (typeof item === 'function') return item.call(obj); // delegate. Note: COM contains _AddRef
     // check cache
     var intf = null;
     if (obj.$interfaces){
@@ -576,7 +576,7 @@ var rtl = {
     ref: function(id,intf){
       // called for temporary interface references needing delayed release
       var old = this[id];
-      //console.log('rtl.intfRefs.ref: id='+id+' old="'+(old?old.$name:'null')+'" intf="'+(intf?intf.$name:'null'));
+      //console.log('rtl.intfRefs.ref: id='+id+' old="'+(old?old.$name:'null')+'" intf="'+(intf?intf.$name:'null')+' $o='+(intf?intf.$o:'null'));
       if (old){
         // called again, e.g. in a loop
         delete this[id];
@@ -588,7 +588,10 @@ var rtl = {
     free: function(){
       //console.log('rtl.intfRefs.free...');
       for (var id in this){
-        if (this.hasOwnProperty(id)) this[id]._Release;
+        if (this.hasOwnProperty(id)){
+          //console.log('rtl.intfRefs.free: id='+id+' '+this[id].$name+' $o='+this[id].$o.$classname);
+          this[id]._Release();
+        }
       }
     }
   },
@@ -745,16 +748,16 @@ var rtl = {
     return true;
   },
 
-  arrayClone: function(type,src,srcpos,end,dst,dstpos){
+  arrayClone: function(type,src,srcpos,endpos,dst,dstpos){
     // type: 0 for references, "refset" for calling refSet(), a function for new type()
     // src must not be null
     // This function does not range check.
     if (rtl.isFunction(type)){
-      for (; srcpos<end; srcpos++) dst[dstpos++] = new type(src[srcpos]); // clone record
-    } else if((typeof(type)==="string") && (type === 'refSet')) {
-      for (; srcpos<end; srcpos++) dst[dstpos++] = rtl.refSet(src[srcpos]); // ref set
+      for (; srcpos<endpos; srcpos++) dst[dstpos++] = new type(src[srcpos]); // clone record
+    } else if(type === 'refSet') {
+      for (; srcpos<endpos; srcpos++) dst[dstpos++] = rtl.refSet(src[srcpos]); // ref set
     }  else {
-      for (; srcpos<end; srcpos++) dst[dstpos++] = src[srcpos]; // reference
+      for (; srcpos<endpos; srcpos++) dst[dstpos++] = src[srcpos]; // reference
     };
   },
 
@@ -762,14 +765,31 @@ var rtl = {
     // type: see rtl.arrayClone
     var a = [];
     var l = 0;
-    for (var i=1; i<arguments.length; i++) l+=arguments[i].length;
+    for (var i=1; i<arguments.length; i++){
+      var src = arguments[i];
+      if (src !== null) l+=src.length;
+    };
     a.length = l;
     l=0;
     for (var i=1; i<arguments.length; i++){
       var src = arguments[i];
-      if (src == null) continue;
+      if (src === null) continue;
       rtl.arrayClone(type,src,0,src.length,a,l);
       l+=src.length;
+    };
+    return a;
+  },
+
+  arrayConcatN: function(){
+    var a = null;
+    for (var i=1; i<arguments.length; i++){
+      var src = arguments[i];
+      if (src === null) continue;
+      if (a===null){
+        a=src; // Note: concat(a) does not clone
+      } else {
+        a=a.concat(src);
+      }
     };
     return a;
   },
@@ -777,7 +797,7 @@ var rtl = {
   arrayCopy: function(type, srcarray, index, count){
     // type: see rtl.arrayClone
     // if count is missing, use srcarray.length
-    if (srcarray == null) return [];
+    if (srcarray === null) return [];
     if (index < 0) index = 0;
     if (count === undefined) count=srcarray.length;
     var end = index+count;
@@ -1895,11 +1915,11 @@ rtl.module("Web",["System","Types","JS"],function () {
   "use strict";
   var $mod = this;
 });
-rtl.module("uMutationObserver",["System","Classes","SysUtils","JS","Web"],function () {
+rtl.module("pas2js.MutationObserver",["System","Classes","SysUtils","JS","Web"],function () {
   "use strict";
   var $mod = this;
 });
-rtl.module("jElement",["System","Classes","SysUtils","Types","JS","Web","uMutationObserver"],function () {
+rtl.module("pas2js.Element",["System","Classes","SysUtils","Types","JS","Web","pas2js.MutationObserver"],function () {
   "use strict";
   var $mod = this;
   var $impl = $mod.$impl;
@@ -2137,10 +2157,10 @@ rtl.module("jElement",["System","Classes","SysUtils","Types","JS","Web","uMutati
     return Result;
   };
 });
-rtl.module("jForm",["System","Classes","SysUtils","JS","Web","jElement"],function () {
+rtl.module("pas2js.Form",["System","Classes","SysUtils","JS","Web","pas2js.Element"],function () {
   "use strict";
   var $mod = this;
-  rtl.createClass($mod,"TWForm",pas.jElement.TCustomControl,function () {
+  rtl.createClass($mod,"TWForm",pas["pas2js.Element"].TCustomControl,function () {
     this.InitializeForm = function () {
       this.Clear();
     };
@@ -2151,10 +2171,10 @@ rtl.module("jForm",["System","Classes","SysUtils","JS","Web","jElement"],functio
     this.Create$2 = function (parent) {
       var Self = this;
       function doOnResize(sender) {
-        pas.jElement.ScreenWidth = window.innerWidth;
+        pas["pas2js.Element"].ScreenWidth = window.innerWidth;
         Self.ReSize();
       };
-      pas.jElement.TCustomControl.Create$1.call(Self,"div",parent);
+      pas["pas2js.Element"].TCustomControl.Create$1.call(Self,"div",parent);
       Self.SetProperty("border","1px double #2196f3");
       Self.SetLeft(5);
       Self.SetTop(5);
@@ -2171,12 +2191,12 @@ rtl.module("jForm",["System","Classes","SysUtils","JS","Web","jElement"],functio
     };
   });
 },[]);
-rtl.module("jApplication",["System","Classes","SysUtils","Types","JS","Web","jElement","jForm"],function () {
+rtl.module("pas2js.Application",["System","Classes","SysUtils","Types","JS","Web","pas2js.Element","pas2js.Form"],function () {
   "use strict";
   var $mod = this;
-  rtl.createClass($mod,"TWApplication",pas.jElement.TCustomControl,function () {
+  rtl.createClass($mod,"TWApplication",pas["pas2js.Element"].TCustomControl,function () {
     this.$init = function () {
-      pas.jElement.TCustomControl.$init.call(this);
+      pas["pas2js.Element"].TCustomControl.$init.call(this);
       this.FormNames = [];
       this.FormsClasses = [];
       this.FormsInstances = [];
@@ -2185,10 +2205,10 @@ rtl.module("jApplication",["System","Classes","SysUtils","Types","JS","Web","jEl
       this.FormNames = undefined;
       this.FormsClasses = undefined;
       this.FormsInstances = undefined;
-      pas.jElement.TCustomControl.$final.call(this);
+      pas["pas2js.Element"].TCustomControl.$final.call(this);
     };
     this.Create$2 = function (parent) {
-      pas.jElement.TCustomControl.Create$1.call(this,"div",parent);
+      pas["pas2js.Element"].TCustomControl.Create$1.call(this,"div",parent);
       this.SetProperty("width","100%");
       this.SetProperty("height","100%");
       this.SetProperty("background-color","white");
@@ -2218,21 +2238,21 @@ rtl.module("jApplication",["System","Classes","SysUtils","Types","JS","Web","jEl
     $mod.Application = $mod.TWApplication.$create("Create$2",[null]);
   };
 });
-rtl.module("jPanel",["System","Classes","SysUtils","JS","Web","jElement"],function () {
+rtl.module("pas2js.Panel",["System","Classes","SysUtils","JS","Web","pas2js.Element"],function () {
   "use strict";
   var $mod = this;
-  rtl.createClass($mod,"TWPanel",pas.jElement.TCustomControl,function () {
+  rtl.createClass($mod,"TWPanel",pas["pas2js.Element"].TCustomControl,function () {
     this.Create$2 = function (parent) {
-      pas.jElement.TCustomControl.Create$1.call(this,"div",parent);
+      pas["pas2js.Element"].TCustomControl.Create$1.call(this,"div",parent);
     };
   });
 });
-rtl.module("jListBox",["System","Classes","SysUtils","JS","Web","jElement","jPanel"],function () {
+rtl.module("pas2js.ListBox",["System","Classes","SysUtils","JS","Web","pas2js.Element","pas2js.Panel"],function () {
   "use strict";
   var $mod = this;
-  rtl.createClass($mod,"TWListBox",pas.jElement.TCustomControl,function () {
+  rtl.createClass($mod,"TWListBox",pas["pas2js.Element"].TCustomControl,function () {
     this.$init = function () {
-      pas.jElement.TCustomControl.$init.call(this);
+      pas["pas2js.Element"].TCustomControl.$init.call(this);
       this.ItemCount = 0;
     };
     this.Create$2 = function (parent) {
@@ -2246,8 +2266,8 @@ rtl.module("jListBox",["System","Classes","SysUtils","JS","Web","jElement","jPan
         c = Self.FHandle.children;
         for (var $l1 = 0, $end2 = c.length - 1; $l1 <= $end2; $l1++) {
           i = $l1;
-          atop = pas.SysUtils.StrToInt(pas.jElement.StrBefore(c.item(i).style.getPropertyValue("top"),"px"));
-          aheight = pas.SysUtils.StrToInt(pas.jElement.StrBefore(c.item(i).style.getPropertyValue("height"),"px"));
+          atop = pas.SysUtils.StrToInt(pas["pas2js.Element"].StrBefore(c.item(i).style.getPropertyValue("top"),"px"));
+          aheight = pas.SysUtils.StrToInt(pas["pas2js.Element"].StrBefore(c.item(i).style.getPropertyValue("height"),"px"));
           c.item(c.length - 1).style.setProperty("display","inline-block");
           if (((atop + aheight) < Self.FHandle.scrollTop) && (c.item(i).style.getPropertyValue("display") === "inline-block")) c.item(i).style.setProperty("display","none");
           if (((atop + aheight) >= Self.FHandle.scrollTop) && (atop <= ((Self.FHandle.scrollTop + Self.GetHeight()) + 2))) {
@@ -2257,7 +2277,7 @@ rtl.module("jListBox",["System","Classes","SysUtils","JS","Web","jElement","jPan
         };
         return Result;
       };
-      pas.jElement.TCustomControl.Create$1.call(Self,"div",parent);
+      pas["pas2js.Element"].TCustomControl.Create$1.call(Self,"div",parent);
       Self.ItemCount = 0;
       Self.FHandle.setAttribute("will-change","transform");
       Self.FHandle.onscroll = doListBox;
@@ -2277,12 +2297,12 @@ rtl.module("jListBox",["System","Classes","SysUtils","JS","Web","jElement","jPan
     };
   });
 },[]);
-rtl.module("jButton",["System","Classes","SysUtils","JS","Web","jElement"],function () {
+rtl.module("pas2js.Button",["System","Classes","SysUtils","JS","Web","pas2js.Element"],function () {
   "use strict";
   var $mod = this;
-  rtl.createClass($mod,"TWButton",pas.jElement.TCustomControl,function () {
+  rtl.createClass($mod,"TWButton",pas["pas2js.Element"].TCustomControl,function () {
     this.Create$2 = function (parent) {
-      pas.jElement.TCustomControl.Create$1.call(this,"button",parent);
+      pas["pas2js.Element"].TCustomControl.Create$1.call(this,"button",parent);
       this.SetProperty("color","white");
       this.SetProperty("border-radius","4px");
       this.SetProperty("background","#699BCE");
@@ -2291,39 +2311,39 @@ rtl.module("jButton",["System","Classes","SysUtils","JS","Web","jElement"],funct
     };
   });
 });
-rtl.module("jImage",["System","Classes","SysUtils","JS","Web","jElement"],function () {
+rtl.module("pas2js.Image",["System","Classes","SysUtils","JS","Web","pas2js.Element"],function () {
   "use strict";
   var $mod = this;
-  rtl.createClass($mod,"TWImage",pas.jElement.TCustomControl,function () {
+  rtl.createClass($mod,"TWImage",pas["pas2js.Element"].TCustomControl,function () {
     this.Create$2 = function (parent) {
-      pas.jElement.TCustomControl.Create$1.call(this,"img",parent);
+      pas["pas2js.Element"].TCustomControl.Create$1.call(this,"img",parent);
     };
   });
 });
-rtl.module("jToolBar",["System","Classes","SysUtils","Types","JS","Web","jElement","jPanel"],function () {
+rtl.module("pas2js.ToolBar",["System","Classes","SysUtils","Types","JS","Web","pas2js.Element","pas2js.Panel"],function () {
   "use strict";
   var $mod = this;
-  rtl.createClass($mod,"TWToolBar",pas.jElement.TCustomControl,function () {
+  rtl.createClass($mod,"TWToolBar",pas["pas2js.Element"].TCustomControl,function () {
     this.$init = function () {
-      pas.jElement.TCustomControl.$init.call(this);
+      pas["pas2js.Element"].TCustomControl.$init.call(this);
       this.ToolBarItems = [];
     };
     this.$final = function () {
       this.ToolBarItems = undefined;
-      pas.jElement.TCustomControl.$final.call(this);
+      pas["pas2js.Element"].TCustomControl.$final.call(this);
     };
     this.Create$2 = function (parent) {
-      pas.jElement.TCustomControl.Create$1.call(this,"div",parent);
+      pas["pas2js.Element"].TCustomControl.Create$1.call(this,"div",parent);
     };
     this.AddMenu = function (menuText, GotoForm, color) {
       var Self = this;
       var Panel0 = null;
       function Panel0Click(Sender) {
-        if (pas.jApplication.Application.FormNames.indexOf(rtl.as(Sender,pas.jPanel.TWPanel).FTag) > -1) {
-          pas.jApplication.Application.GoToForm(rtl.as(Sender,pas.jPanel.TWPanel).FTag)}
+        if (pas["pas2js.Application"].Application.FormNames.indexOf(rtl.as(Sender,pas["pas2js.Panel"].TWPanel).FTag) > -1) {
+          pas["pas2js.Application"].Application.GoToForm(rtl.as(Sender,pas["pas2js.Panel"].TWPanel).FTag)}
          else window.postMessage([Self.FHandle.id,"click",GotoForm],"*");
       };
-      Panel0 = pas.jPanel.TWPanel.$create("Create$2",[Self]);
+      Panel0 = pas["pas2js.Panel"].TWPanel.$create("Create$2",[Self]);
       Panel0.SetBounds(20 + (Self.ToolBarItems.length * 100),14,90,26);
       Panel0.SetinnerHTML(menuText);
       Panel0.SetProperty("color",color);
@@ -2346,13 +2366,13 @@ rtl.module("jToolBar",["System","Classes","SysUtils","Types","JS","Web","jElemen
       };
     };
   });
-},["jApplication"]);
-rtl.module("jProgressBar",["System","Classes","SysUtils","JS","Web","jElement","jPanel"],function () {
+},["pas2js.Application"]);
+rtl.module("pas2js.ProgressBar",["System","Classes","SysUtils","JS","Web","pas2js.Element","pas2js.Panel"],function () {
   "use strict";
   var $mod = this;
-  rtl.createClass($mod,"TWProgress",pas.jElement.TCustomControl,function () {
+  rtl.createClass($mod,"TWProgress",pas["pas2js.Element"].TCustomControl,function () {
     this.$init = function () {
-      pas.jElement.TCustomControl.$init.call(this);
+      pas["pas2js.Element"].TCustomControl.$init.call(this);
       this.Light = null;
       this.timer = 0;
       this.ProgressBar = null;
@@ -2360,7 +2380,7 @@ rtl.module("jProgressBar",["System","Classes","SysUtils","JS","Web","jElement","
     this.$final = function () {
       this.Light = undefined;
       this.ProgressBar = undefined;
-      pas.jElement.TCustomControl.$final.call(this);
+      pas["pas2js.Element"].TCustomControl.$final.call(this);
     };
     this.SetPerc = function (aPerc) {
       var f = 0.0;
@@ -2391,9 +2411,9 @@ rtl.module("jProgressBar",["System","Classes","SysUtils","JS","Web","jElement","
           window.clearInterval(Self.timer);
         };
       };
-      pas.jElement.TCustomControl.Create$1.call(Self,"div",parent);
-      Self.ProgressBar = pas.jPanel.TWPanel.$create("Create$2",[Self]);
-      Self.Light = pas.jPanel.TWPanel.$create("Create$2",[Self.ProgressBar]);
+      pas["pas2js.Element"].TCustomControl.Create$1.call(Self,"div",parent);
+      Self.ProgressBar = pas["pas2js.Panel"].TWPanel.$create("Create$2",[Self]);
+      Self.Light = pas["pas2js.Panel"].TWPanel.$create("Create$2",[Self.ProgressBar]);
       Self.Light.SetProperty("border-radius","2px");
       Self.Light.SetProperty("background-color","white");
       Self.Light.SetProperty("opacity","0.5");
@@ -2402,12 +2422,12 @@ rtl.module("jProgressBar",["System","Classes","SysUtils","JS","Web","jElement","
     };
   });
 });
-rtl.module("JSplitter",["System","Classes","SysUtils","JS","Web","jElement","jPanel"],function () {
+rtl.module("pas2js.Splitter",["System","Classes","SysUtils","JS","Web","pas2js.Element","pas2js.Panel"],function () {
   "use strict";
   var $mod = this;
-  rtl.createClass($mod,"TWSplitter",pas.jElement.TCustomControl,function () {
+  rtl.createClass($mod,"TWSplitter",pas["pas2js.Element"].TCustomControl,function () {
     this.$init = function () {
-      pas.jElement.TCustomControl.$init.call(this);
+      pas["pas2js.Element"].TCustomControl.$init.call(this);
       this.PanelLeft = null;
       this.PanelRight = null;
       this.ReSizer = null;
@@ -2416,7 +2436,7 @@ rtl.module("JSplitter",["System","Classes","SysUtils","JS","Web","jElement","jPa
       this.PanelLeft = undefined;
       this.PanelRight = undefined;
       this.ReSizer = undefined;
-      pas.jElement.TCustomControl.$final.call(this);
+      pas["pas2js.Element"].TCustomControl.$final.call(this);
     };
     this.Create$2 = function (parent) {
       var Self = this;
@@ -2466,10 +2486,10 @@ rtl.module("JSplitter",["System","Classes","SysUtils","JS","Web","jElement","jPa
         Self.ReSizer.FHandle.onmousedown = doReSizerOnMouseDown;
         Self.FHandle.onmouseup = doSplitterOnMouseUp;
       };
-      pas.jElement.TCustomControl.Create$1.call(Self,"div",parent);
-      Self.PanelLeft = pas.jPanel.TWPanel.$create("Create$2",[Self]);
-      Self.PanelRight = pas.jPanel.TWPanel.$create("Create$2",[Self]);
-      Self.ReSizer = pas.jPanel.TWPanel.$create("Create$2",[Self.PanelRight]);
+      pas["pas2js.Element"].TCustomControl.Create$1.call(Self,"div",parent);
+      Self.PanelLeft = pas["pas2js.Panel"].TWPanel.$create("Create$2",[Self]);
+      Self.PanelRight = pas["pas2js.Panel"].TWPanel.$create("Create$2",[Self]);
+      Self.ReSizer = pas["pas2js.Panel"].TWPanel.$create("Create$2",[Self.PanelRight]);
       Self.ReSizer.SetProperty("background-color","#ccc");
       Self.ReSizer.SetProperty("cursor","w-resize");
       Self.ReSizer.SetWidth(4);
@@ -2477,12 +2497,12 @@ rtl.module("JSplitter",["System","Classes","SysUtils","JS","Web","jElement","jPa
     };
   });
 });
-rtl.module("JSelect",["System","Classes","SysUtils","Types","JS","Web","jElement","jListBox","jPanel","jImage"],function () {
+rtl.module("pas2js.Select",["System","Classes","SysUtils","Types","JS","Web","pas2js.Element","pas2js.ListBox","pas2js.Panel","pas2js.Image"],function () {
   "use strict";
   var $mod = this;
-  rtl.createClass($mod,"TWSelect",pas.jElement.TCustomControl,function () {
+  rtl.createClass($mod,"TWSelect",pas["pas2js.Element"].TCustomControl,function () {
     this.$init = function () {
-      pas.jElement.TCustomControl.$init.call(this);
+      pas["pas2js.Element"].TCustomControl.$init.call(this);
       this.ListBox = null;
       this.Panel = null;
       this.Chevron = null;
@@ -2492,7 +2512,7 @@ rtl.module("JSelect",["System","Classes","SysUtils","Types","JS","Web","jElement
       this.ListBox = undefined;
       this.Panel = undefined;
       this.Chevron = undefined;
-      pas.jElement.TCustomControl.$final.call(this);
+      pas["pas2js.Element"].TCustomControl.$final.call(this);
     };
     this.Create$2 = function (parent) {
       var Self = this;
@@ -2507,15 +2527,15 @@ rtl.module("JSelect",["System","Classes","SysUtils","Types","JS","Web","jElement
         Self.ListBox.SetWidth(Self.GetWidth());
         Self.ListBox.SetHeight(Self.GetHeight() - 22);
       };
-      pas.jElement.TCustomControl.Create$1.call(Self,"div",parent);
-      Self.Panel = pas.jPanel.TWPanel.$create("Create$2",[Self]);
+      pas["pas2js.Element"].TCustomControl.Create$1.call(Self,"div",parent);
+      Self.Panel = pas["pas2js.Panel"].TWPanel.$create("Create$2",[Self]);
       Self.Panel._setMouseClick(doPanelClick);
       Self.Panel.SetProperty("border","1px solid silver");
       Self.Panel.SetinnerHTML("select...");
-      Self.Chevron = pas.jImage.TWImage.$create("Create$2",[Self]);
+      Self.Chevron = pas["pas2js.Image"].TWImage.$create("Create$2",[Self]);
       Self.Chevron.SetAttribute("src","images\/chevron-down.png");
       Self.Chevron._setMouseClick(Self.Panel.FOnClick);
-      Self.ListBox = pas.jListBox.TWListBox.$create("Create$2",[Self]);
+      Self.ListBox = pas["pas2js.ListBox"].TWListBox.$create("Create$2",[Self]);
       Self.ListBox.SetProperty("display","none");
       Self.ListBox.SetTop(22);
       Self._setOnReadyExecute(doOnReadyExecute);
@@ -2523,8 +2543,8 @@ rtl.module("JSelect",["System","Classes","SysUtils","Types","JS","Web","jElement
     this.Add = function (item) {
       var Self = this;
       function doSelectOnClick(Sender) {
-        Self.Panel.SetinnerHTML(rtl.as(Sender,pas.jElement.TCustomControl).FTag);
-        Self.Value = rtl.as(Sender,pas.jElement.TCustomControl).FTag;
+        Self.Panel.SetinnerHTML(rtl.as(Sender,pas["pas2js.Element"].TCustomControl).FTag);
+        Self.Value = rtl.as(Sender,pas["pas2js.Element"].TCustomControl).FTag;
         window.postMessage([Self.FHandle.id,"click",Self.Value],"*");
         Self.ListBox.SetProperty("display","none");
       };
@@ -2533,71 +2553,71 @@ rtl.module("JSelect",["System","Classes","SysUtils","Types","JS","Web","jElement
     };
   });
 });
-rtl.module("jVideo",["System","Classes","SysUtils","JS","Web","jElement"],function () {
+rtl.module("pas2js.Video",["System","Classes","SysUtils","JS","Web","pas2js.Element"],function () {
   "use strict";
   var $mod = this;
-  rtl.createClass($mod,"TWVideo",pas.jElement.TCustomControl,function () {
+  rtl.createClass($mod,"TWVideo",pas["pas2js.Element"].TCustomControl,function () {
     this.Create$2 = function (parent) {
-      pas.jElement.TCustomControl.Create$1.call(this,"video",parent);
+      pas["pas2js.Element"].TCustomControl.Create$1.call(this,"video",parent);
     };
   });
 });
-rtl.module("JAnchor",["System","Classes","SysUtils","JS","Web","jElement","jImage"],function () {
+rtl.module("pas2js.Anchor",["System","Classes","SysUtils","JS","Web","pas2js.Element","pas2js.Image"],function () {
   "use strict";
   var $mod = this;
-  rtl.createClass($mod,"TWAnchor",pas.jElement.TCustomControl,function () {
+  rtl.createClass($mod,"TWAnchor",pas["pas2js.Element"].TCustomControl,function () {
     this.$init = function () {
-      pas.jElement.TCustomControl.$init.call(this);
+      pas["pas2js.Element"].TCustomControl.$init.call(this);
       this.placeholder = null;
     };
     this.$final = function () {
       this.placeholder = undefined;
-      pas.jElement.TCustomControl.$final.call(this);
+      pas["pas2js.Element"].TCustomControl.$final.call(this);
     };
     this.Create$2 = function (parent) {
-      pas.jElement.TCustomControl.Create$1.call(this,"a",parent);
-      this.placeholder = pas.jImage.TWImage.$create("Create$2",[this]);
-    };
-  });
-});
-rtl.module("JTextArea",["System","Classes","SysUtils","JS","Web","jElement"],function () {
-  "use strict";
-  var $mod = this;
-  rtl.createClass($mod,"TWTextArea",pas.jElement.TCustomControl,function () {
-    this.Create$2 = function (parent) {
-      pas.jElement.TCustomControl.Create$1.call(this,"textarea",parent);
+      pas["pas2js.Element"].TCustomControl.Create$1.call(this,"a",parent);
+      this.placeholder = pas["pas2js.Image"].TWImage.$create("Create$2",[this]);
     };
   });
 });
-rtl.module("jIframe",["System","Classes","SysUtils","JS","Web","jElement"],function () {
+rtl.module("pas2js.TextArea",["System","Classes","SysUtils","JS","Web","pas2js.Element"],function () {
   "use strict";
   var $mod = this;
-  rtl.createClass($mod,"TWIFrame",pas.jElement.TCustomControl,function () {
+  rtl.createClass($mod,"TWTextArea",pas["pas2js.Element"].TCustomControl,function () {
     this.Create$2 = function (parent) {
-      pas.jElement.TCustomControl.Create$1.call(this,"iframe",parent);
+      pas["pas2js.Element"].TCustomControl.Create$1.call(this,"textarea",parent);
+    };
+  });
+});
+rtl.module("pas2js.Iframe",["System","Classes","SysUtils","JS","Web","pas2js.Element"],function () {
+  "use strict";
+  var $mod = this;
+  rtl.createClass($mod,"TWIFrame",pas["pas2js.Element"].TCustomControl,function () {
+    this.Create$2 = function (parent) {
+      pas["pas2js.Element"].TCustomControl.Create$1.call(this,"iframe",parent);
       this.SetProperty("frameBorder","0px");
       this.SetProperty("border-radius",".25em");
       this.SetProperty("box-shadow","0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -2px rgba(0, 0, 0, 0.2)");
     };
   });
 });
-rtl.module("jFlipScroll",["System","Classes","SysUtils","JS","Web","Types","jElement","jImage"],function () {
+rtl.module("pas2js.FlipScroll",["System","Classes","SysUtils","JS","Web","Types","pas2js.Element","pas2js.Image"],function () {
   "use strict";
   var $mod = this;
-  rtl.createClass($mod,"TWFlipScroll",pas.jElement.TCustomControl,function () {
+  rtl.createClass($mod,"TWFlipScroll",pas["pas2js.Element"].TCustomControl,function () {
     this.Create$2 = function (parent) {
       var Self = this;
       function doFlipScrollOnLoad(event) {
         var Result = false;
         function doContentWindowMessage(evt) {
           var iframeheight = 0;
-          iframeheight = pas.SysUtils.StrToInt(pas.jElement.StrBefore(Self.FHandle.style.getPropertyValue("height"),"px"));
+          iframeheight = pas.SysUtils.StrToInt(pas["pas2js.Element"].StrBefore(Self.FHandle.style.getPropertyValue("height"),"px"));
           Self.AutoScroll(iframeheight * pas.SysUtils.StrToInt("" + evt["data"]),250);
         };
         Self.FHandle.contentWindow.addEventListener("message",doContentWindowMessage);
         return Result;
       };
-      pas.jElement.TCustomControl.Create$1.call(Self,"iframe",parent);
+      pas["pas2js.Element"].TCustomControl.Create$1.call(Self,"iframe",parent);
       Self.FHandle.onload = doFlipScrollOnLoad;
     };
     this.GotoPage = function (page) {
@@ -2617,13 +2637,13 @@ rtl.module("jFlipScroll",["System","Classes","SysUtils","JS","Web","Types","jEle
     };
   });
 });
-rtl.module("JLoader",["System","Classes","SysUtils","JS","Web","jElement"],function () {
+rtl.module("pas2js.Loader",["System","Classes","SysUtils","JS","Web","pas2js.Element"],function () {
   "use strict";
   var $mod = this;
-  rtl.createClass($mod,"TWLoader",pas.jElement.TCustomControl,function () {
+  rtl.createClass($mod,"TWLoader",pas["pas2js.Element"].TCustomControl,function () {
     this.Create$2 = function (parent) {
       var s = "";
-      pas.jElement.TCustomControl.Create$1.call(this,"div",parent);
+      pas["pas2js.Element"].TCustomControl.Create$1.call(this,"div",parent);
       this.SetProperty("border","6px solid #f3f3f3");
       this.SetProperty("border-radius","50%");
       this.SetProperty("border-top","6px solid #3498db");
@@ -2634,24 +2654,24 @@ rtl.module("JLoader",["System","Classes","SysUtils","JS","Web","jElement"],funct
     };
   });
 });
-rtl.module("jSpinner",["System","Classes","SysUtils","JS","Web","jElement"],function () {
+rtl.module("pas2js.Spinner",["System","Classes","SysUtils","JS","Web","pas2js.Element"],function () {
   "use strict";
   var $mod = this;
-  rtl.createClass($mod,"TWSpinner",pas.jElement.TCustomControl,function () {
+  rtl.createClass($mod,"TWSpinner",pas["pas2js.Element"].TCustomControl,function () {
     this.Create$2 = function (parent) {
-      pas.jElement.TCustomControl.Create$1.call(this,"div",parent);
+      pas["pas2js.Element"].TCustomControl.Create$1.call(this,"div",parent);
       this.SetProperty("-webkit-animation","sk-rotate 2.0s infinite linear");
       this.SetProperty("animation","sk-rotate 2.0s infinite linear");
       this.SetinnerHTML('<div class="dot1"><\/div><div class="dot2"><\/div>');
     };
   });
 });
-rtl.module("jGrid",["System","Classes","SysUtils","JS","Web","jElement","jListBox","jPanel"],function () {
+rtl.module("pas2js.Grid",["System","Classes","SysUtils","JS","Web","pas2js.Element","pas2js.ListBox","pas2js.Panel"],function () {
   "use strict";
   var $mod = this;
-  rtl.createClass($mod,"TWGrid",pas.jElement.TCustomControl,function () {
+  rtl.createClass($mod,"TWGrid",pas["pas2js.Element"].TCustomControl,function () {
     this.$init = function () {
-      pas.jElement.TCustomControl.$init.call(this);
+      pas["pas2js.Element"].TCustomControl.$init.call(this);
       this.ListBox = null;
       this.Item = null;
       this.ItemHeight = 0;
@@ -2665,7 +2685,7 @@ rtl.module("jGrid",["System","Classes","SysUtils","JS","Web","jElement","jListBo
       this.Item = undefined;
       this.ColumnWidths = undefined;
       this.Columns = undefined;
-      pas.jElement.TCustomControl.$final.call(this);
+      pas["pas2js.Element"].TCustomControl.$final.call(this);
     };
     this.HandleColumnResize = function (columnTitle) {
       var Self = this;
@@ -2726,7 +2746,7 @@ rtl.module("jGrid",["System","Classes","SysUtils","JS","Web","jElement","jListBo
       document.styleSheets.item(0).insertRule(("#" + Self.ListBox.FHandle.id) + " { -webkit-user-select:none}",0);
       document.styleSheets.item(0).insertRule(("#" + Self.ListBox.FHandle.id) + " { -moz-user-select:none}",0);
       document.styleSheets.item(0).insertRule(("#" + Self.ListBox.FHandle.id) + " { -ms-user-select:none}",0);
-      ReSizer = pas.jPanel.TWPanel.$create("Create$2",[columnTitle]);
+      ReSizer = pas["pas2js.Panel"].TWPanel.$create("Create$2",[columnTitle]);
       ReSizer.SetProperty("background-color","gold");
       ReSizer.SetBounds(0,1,4,22);
       ReSizer.SetLeft(columnTitle.GetWidth() - 4);
@@ -2741,9 +2761,9 @@ rtl.module("jGrid",["System","Classes","SysUtils","JS","Web","jElement","jListBo
       function gridOnReadyExecute(sender) {
         Self.ListBox.SetBounds(0,28,Self.GetWidth() - 2,Self.GetHeight() - 28);
       };
-      pas.jElement.TCustomControl.Create$1.call(Self,"div",parent);
-      Self.ListBox = pas.jListBox.TWListBox.$create("Create$2",[Self]);
-      Self.Item = pas.jPanel.TWPanel.$create("Create$2",[Self.ListBox]);
+      pas["pas2js.Element"].TCustomControl.Create$1.call(Self,"div",parent);
+      Self.ListBox = pas["pas2js.ListBox"].TWListBox.$create("Create$2",[Self]);
+      Self.Item = pas["pas2js.Panel"].TWPanel.$create("Create$2",[Self.ListBox]);
       Self.ColumnCount = 0;
       Self._setOnReadyExecute(gridOnReadyExecute);
     };
@@ -2752,7 +2772,7 @@ rtl.module("jGrid",["System","Classes","SysUtils","JS","Web","jElement","jListBo
       var CurLength = 0;
       var i = 0;
       this.ColumnWidths.push(colwidth);
-      columnTitle = pas.jPanel.TWPanel.$create("Create$2",[this]);
+      columnTitle = pas["pas2js.Panel"].TWPanel.$create("Create$2",[this]);
       columnTitle.SetinnerHTML(title);
       columnTitle.SetBounds(0,0,colwidth,24);
       columnTitle.SetProperty("border","1px solid grey");
@@ -2771,7 +2791,7 @@ rtl.module("jGrid",["System","Classes","SysUtils","JS","Web","jElement","jListBo
       var i = 0;
       var c = null;
       if (column === 1) {
-        this.Item = pas.jPanel.TWPanel.$create("Create$2",[this.ListBox]);
+        this.Item = pas["pas2js.Panel"].TWPanel.$create("Create$2",[this.ListBox]);
         this.Item.SetProperty("border-bottom","none");
         this.Item.SetProperty("width",pas.SysUtils.IntToStr(this.GetWidth() - 2) + "px");
         this.Item.SetProperty("height",pas.SysUtils.IntToStr(cell.GetHeight() + 6) + "px");
@@ -2800,25 +2820,25 @@ rtl.module("jGrid",["System","Classes","SysUtils","JS","Web","jElement","jListBo
     };
   });
 });
-rtl.module("jCanvas",["System","Classes","SysUtils","JS","Web","jElement"],function () {
+rtl.module("pas2js.Canvas",["System","Classes","SysUtils","JS","Web","pas2js.Element"],function () {
   "use strict";
   var $mod = this;
-  rtl.createClass($mod,"TWCanvas",pas.jElement.TCustomControl,function () {
+  rtl.createClass($mod,"TWCanvas",pas["pas2js.Element"].TCustomControl,function () {
     this.$init = function () {
-      pas.jElement.TCustomControl.$init.call(this);
+      pas["pas2js.Element"].TCustomControl.$init.call(this);
       this.ctx = null;
     };
     this.$final = function () {
       this.ctx = undefined;
-      pas.jElement.TCustomControl.$final.call(this);
+      pas["pas2js.Element"].TCustomControl.$final.call(this);
     };
     this.Create$2 = function (parent) {
-      pas.jElement.TCustomControl.Create$1.call(this,"canvas",parent);
+      pas["pas2js.Element"].TCustomControl.Create$1.call(this,"canvas",parent);
       this.ctx = this.FHandle.getContext("2d");
     };
   });
 });
-rtl.module("jTreeView",["System","Classes","SysUtils","Types","JS","Web","jElement","jListBox","jPanel"],function () {
+rtl.module("pas2js.TreeView",["System","Classes","SysUtils","Types","JS","Web","pas2js.Element","pas2js.ListBox","pas2js.Panel"],function () {
   "use strict";
   var $mod = this;
   rtl.createClass($mod,"TWTreeNode",pas.System.TObject,function () {
@@ -2837,9 +2857,9 @@ rtl.module("jTreeView",["System","Classes","SysUtils","Types","JS","Web","jEleme
       pas.System.TObject.$final.call(this);
     };
   });
-  rtl.createClass($mod,"TWTreeView",pas.jElement.TCustomControl,function () {
+  rtl.createClass($mod,"TWTreeView",pas["pas2js.Element"].TCustomControl,function () {
     this.$init = function () {
-      pas.jElement.TCustomControl.$init.call(this);
+      pas["pas2js.Element"].TCustomControl.$init.call(this);
       this.ListBox = null;
       this.Title = null;
       this.Node = null;
@@ -2851,7 +2871,7 @@ rtl.module("jTreeView",["System","Classes","SysUtils","Types","JS","Web","jEleme
       this.Title = undefined;
       this.Node = undefined;
       this.Root = undefined;
-      pas.jElement.TCustomControl.$final.call(this);
+      pas["pas2js.Element"].TCustomControl.$final.call(this);
     };
     this.FindNode = function (ThisNode) {
       var Result = null;
@@ -2887,8 +2907,8 @@ rtl.module("jTreeView",["System","Classes","SysUtils","Types","JS","Web","jEleme
       var i = 0;
       var j = 0;
       function doItemOnClick(Sender) {
-        Self.Title.SetinnerHTML(rtl.as(Sender,pas.jElement.TCustomControl).FTag);
-        Self.Subject = rtl.as(Sender,pas.jElement.TCustomControl).FTag;
+        Self.Title.SetinnerHTML(rtl.as(Sender,pas["pas2js.Element"].TCustomControl).FTag);
+        Self.Subject = rtl.as(Sender,pas["pas2js.Element"].TCustomControl).FTag;
         node.Expanded = !node.Expanded;
         for (var $l1 = 0, $end2 = node.Children.length - 1; $l1 <= $end2; $l1++) {
           j = $l1;
@@ -2906,7 +2926,7 @@ rtl.module("jTreeView",["System","Classes","SysUtils","Types","JS","Web","jEleme
         return Result;
       };
       if (node.Showing) {
-        Item = pas.jPanel.TWPanel.$create("Create$2",[Self]);
+        Item = pas["pas2js.Panel"].TWPanel.$create("Create$2",[Self]);
         Item.SetProperty("background-color","whitesmoke");
         Item.SetProperty("font-size","0.85em");
         Item.SetHeight(21);
@@ -2942,13 +2962,13 @@ rtl.module("jTreeView",["System","Classes","SysUtils","Types","JS","Web","jEleme
         Self.ListBox.SetHeight(Self.GetHeight() - 20);
         Self.ShowTree();
       };
-      pas.jElement.TCustomControl.Create$1.call(Self,"div",parent);
+      pas["pas2js.Element"].TCustomControl.Create$1.call(Self,"div",parent);
       Self.Subject = "TreeView...";
-      Self.Title = pas.jPanel.TWPanel.$create("Create$2",[Self]);
+      Self.Title = pas["pas2js.Panel"].TWPanel.$create("Create$2",[Self]);
       Self.Title.SetProperty("border","1px solid white");
       Self.Title.SetProperty("background-color","#699BCE");
       Self.Title.SetProperty("color","white");
-      Self.ListBox = pas.jListBox.TWListBox.$create("Create$2",[Self]);
+      Self.ListBox = pas["pas2js.ListBox"].TWListBox.$create("Create$2",[Self]);
       Self.ListBox.SetTop(20);
       Self._setOnReadyExecute(doTreeViewOnReadyExecute);
     };
@@ -2985,12 +3005,12 @@ rtl.module("jTreeView",["System","Classes","SysUtils","Types","JS","Web","jEleme
     };
   });
 });
-rtl.module("jCheckBox",["System","Classes","SysUtils","Types","JS","Web","jElement","jPanel"],function () {
+rtl.module("pas2js.CheckBox",["System","Classes","SysUtils","Types","JS","Web","pas2js.Element","pas2js.Panel"],function () {
   "use strict";
   var $mod = this;
-  rtl.createClass($mod,"TWCheckBox",pas.jElement.TCustomControl,function () {
+  rtl.createClass($mod,"TWCheckBox",pas["pas2js.Element"].TCustomControl,function () {
     this.$init = function () {
-      pas.jElement.TCustomControl.$init.call(this);
+      pas["pas2js.Element"].TCustomControl.$init.call(this);
       this.Checked = false;
       this.Label = "";
       this.CheckBoxDimension = 0;
@@ -2998,7 +3018,7 @@ rtl.module("jCheckBox",["System","Classes","SysUtils","Types","JS","Web","jEleme
     };
     this.$final = function () {
       this.Box = undefined;
-      pas.jElement.TCustomControl.$final.call(this);
+      pas["pas2js.Element"].TCustomControl.$final.call(this);
     };
     this.Create$2 = function (parent) {
       var Self = this;
@@ -3012,7 +3032,7 @@ rtl.module("jCheckBox",["System","Classes","SysUtils","Types","JS","Web","jEleme
       function doCheckBoxOnClick(sender) {
         var Label1 = null;
         if (Self.Checked) Self.Box.SetProperty("background-image",$mod.CheckImage);
-        Label1 = pas.jPanel.TWPanel.$create("Create$2",[Self]);
+        Label1 = pas["pas2js.Panel"].TWPanel.$create("Create$2",[Self]);
         Label1.SetinnerHTML(Self.Label);
         Label1._setMouseClick(Self.Box.FOnClick);
         Label1.SetProperty("cursor","pointer");
@@ -3022,9 +3042,9 @@ rtl.module("jCheckBox",["System","Classes","SysUtils","Types","JS","Web","jEleme
         Self.Box.SetBounds(0,0,Self.CheckBoxDimension,Self.CheckBoxDimension);
         Label1.SetBounds(pas.System.Trunc(Self.CheckBoxDimension * 1.5),(Self.Box.GetTop() + Self.CheckBoxDimension) - Label1.FHandle.clientHeight,Label1.FHandle.clientWidth + 2,(Self.CheckBoxDimension - Self.CheckBoxDimension) + Label1.FHandle.clientHeight);
       };
-      pas.jElement.TCustomControl.Create$1.call(Self,"div",parent);
+      pas["pas2js.Element"].TCustomControl.Create$1.call(Self,"div",parent);
       Self.CheckBoxDimension = 20;
-      Self.Box = pas.jElement.TCustomControl.$create("Create$1",["div",Self]);
+      Self.Box = pas["pas2js.Element"].TCustomControl.$create("Create$1",["div",Self]);
       Self.Box.SetProperty("border","1px solid silver");
       Self.Box.SetProperty("border-radius","5px");
       Self.Box.SetProperty("background-size","cover");
@@ -3041,18 +3061,18 @@ rtl.module("jCheckBox",["System","Classes","SysUtils","Types","JS","Web","jEleme
     $mod.CheckImage = (((((((((((("url(data:image\/jpeg;base64," + "\/9j\/4AAQSkZJRgABAgAAZABkAAD\/7AARRHVja3kAAQAEAAAAHgAA\/+4ADkFkb2JlAGTAAAAAAf\/bAIQ") + "AEAsLCwwLEAwMEBcPDQ8XGxQQEBQbHxcXFxcXHx4XGhoaGhceHiMlJyUjHi8vMzMvL0BAQEBAQEBAQEB") + "AQEBAQAERDw8RExEVEhIVFBEUERQaFBYWFBomGhocGhomMCMeHh4eIzArLicnJy4rNTUwMDU1QEA\/QEB") + "AQEBAQEBAQEBA\/8AAEQgAMgAyAwEiAAIRAQMRAf\/EAH4AAQADAQEBAAAAAAAAAAAAAAABAgMFBAYBAAM") + "BAQAAAAAAAAAAAAAAAAABAwIFEAACAgEDAAcHBQAAAAAAAAABAgADBBEhMVFhIjJCMwVBsdESUmITcYG") + "hkgYRAAIBAwIGAwAAAAAAAAAAAAACARESAzFRIUFhccEiMhME\/9oADAMBAAIRAxEAPwCCzMSzEszbsx3") + "JJ5JiQOJM75wBERABE1x8bIyX\/Hj1mxwNSB7B1k7TN0et2R1Kup0ZTsQRFWK0rFdh0mlaTTfkV0HREmI") + "xEDibLiZTUHTWpjQvesA225mI4nf9B9WrRFwMjRV1Iqc8do6\/K37naTzO6Jci30njHTmUwojta7WVjhP") + "XkcGb4eHfm3iigasd2Y8KvSZ1\/UP865yFbBAFVh7aHYV9Y+3qnvTWvQcLbtO3s8dr\/AfxIv8AqWVj6vd") + "30XbuWT8rQ0\/b6Imrb9gTheg4Wg7TtwPHa\/w90+WyL3yb3vs0+ew6nTiWy8u\/Mva+9tWPAHCj6V6pjN4") + "MNlWabsj\/ACnwYz5r6KsW40+MeRERLkCBxJkDgSYAdrA\/0b49H4slGuKDStwRr+j6++cvLy78y833tqx") + "2AHCj6VmMSa4catLKtJYo2bIywrNMwoiIlCYiIgBe7z7e7328vy+fB9vRKREUaR2CdZEREYCIiAFP7cx") + "ERmT\/2Q==)";
   };
 });
-rtl.module("jFieldSet",["System","Classes","SysUtils","JS","Web","jElement"],function () {
+rtl.module("pas2js.FieldSet",["System","Classes","SysUtils","JS","Web","pas2js.Element"],function () {
   "use strict";
   var $mod = this;
-  rtl.createClass($mod,"TWFieldSet",pas.jElement.TCustomControl,function () {
+  rtl.createClass($mod,"TWFieldSet",pas["pas2js.Element"].TCustomControl,function () {
     this.$init = function () {
-      pas.jElement.TCustomControl.$init.call(this);
+      pas["pas2js.Element"].TCustomControl.$init.call(this);
       this.Legend = "";
       this.Title = null;
     };
     this.$final = function () {
       this.Title = undefined;
-      pas.jElement.TCustomControl.$final.call(this);
+      pas["pas2js.Element"].TCustomControl.$final.call(this);
     };
     this.Create$2 = function (parent) {
       var Self = this;
@@ -3060,7 +3080,7 @@ rtl.module("jFieldSet",["System","Classes","SysUtils","JS","Web","jElement"],fun
         var i = 0;
         var d = null;
         if (Self.Legend !== "") {
-          Self.Title = pas.jElement.TCustomControl.$create("Create$1",["legend",Self]);
+          Self.Title = pas["pas2js.Element"].TCustomControl.$create("Create$1",["legend",Self]);
           Self.Title.FHandle.innerHTML = Self.Legend;
           Self.Title.FHandle.removeAttribute("style");
         };
@@ -3075,18 +3095,18 @@ rtl.module("jFieldSet",["System","Classes","SysUtils","JS","Web","jElement"],fun
           };
         };
       };
-      pas.jElement.TCustomControl.Create$1.call(Self,"fieldset",parent);
+      pas["pas2js.Element"].TCustomControl.Create$1.call(Self,"fieldset",parent);
       Self.SetProperty("border","1px solid silver");
       Self._setOnReadyExecute(doFieldSetOnReadyExecute);
     };
   });
 });
-rtl.module("jRadioButton",["System","Classes","SysUtils","Types","JS","Web","jElement","jPanel"],function () {
+rtl.module("pas2js.RadioButton",["System","Classes","SysUtils","Types","JS","Web","pas2js.Element","pas2js.Panel"],function () {
   "use strict";
   var $mod = this;
-  rtl.createClass($mod,"TWRadioButton",pas.jElement.TCustomControl,function () {
+  rtl.createClass($mod,"TWRadioButton",pas["pas2js.Element"].TCustomControl,function () {
     this.$init = function () {
-      pas.jElement.TCustomControl.$init.call(this);
+      pas["pas2js.Element"].TCustomControl.$init.call(this);
       this.Checked = false;
       this.Label = "";
       this.RadioButtonDimension = 0;
@@ -3094,7 +3114,7 @@ rtl.module("jRadioButton",["System","Classes","SysUtils","Types","JS","Web","jEl
     };
     this.$final = function () {
       this.Button = undefined;
-      pas.jElement.TCustomControl.$final.call(this);
+      pas["pas2js.Element"].TCustomControl.$final.call(this);
     };
     this.Create$2 = function (parent) {
       var Self = this;
@@ -3118,7 +3138,7 @@ rtl.module("jRadioButton",["System","Classes","SysUtils","Types","JS","Web","jEl
       function doRadioButtonOnClick(sender) {
         var Label1 = null;
         if (Self.Checked) Self.Button.SetProperty("background-image",$mod.CheckImage);
-        Label1 = pas.jPanel.TWPanel.$create("Create$2",[Self]);
+        Label1 = pas["pas2js.Panel"].TWPanel.$create("Create$2",[Self]);
         Label1.SetinnerHTML(Self.Label);
         Label1._setMouseClick(Self.Button.FOnClick);
         Label1.SetProperty("cursor","pointer");
@@ -3128,9 +3148,9 @@ rtl.module("jRadioButton",["System","Classes","SysUtils","Types","JS","Web","jEl
         Self.Button.SetBounds(0,0,Self.RadioButtonDimension,Self.RadioButtonDimension);
         Label1.SetBounds(pas.System.Trunc(Self.RadioButtonDimension * 1.5),((Self.Button.GetTop() + Self.RadioButtonDimension) - Label1.FHandle.clientHeight) + 2,Label1.FHandle.clientWidth + 2,(Self.RadioButtonDimension - Self.RadioButtonDimension) + Label1.FHandle.clientHeight);
       };
-      pas.jElement.TCustomControl.Create$1.call(Self,"div",parent);
+      pas["pas2js.Element"].TCustomControl.Create$1.call(Self,"div",parent);
       Self.RadioButtonDimension = 16;
-      Self.Button = pas.jElement.TCustomControl.$create("Create$1",["div",Self]);
+      Self.Button = pas["pas2js.Element"].TCustomControl.$create("Create$1",["div",Self]);
       Self.Button.SetProperty("border","1px solid #0066cc");
       Self.Button.SetProperty("border-radius","50%");
       Self.Button.SetProperty("background-size","cover");
@@ -3147,19 +3167,19 @@ rtl.module("jRadioButton",["System","Classes","SysUtils","Types","JS","Web","jEl
     $mod.CheckImage = ((((((((((((((((((("url(data:image\/jpeg;base64," + "\/9j\/4AAQSkZJRgABAgAAZABkAAD\/7AARRHVja3kAAQAEAAAAHgAA\/+4ADkFkb2JlAGTAAAAAAf\/bAIQ") + "AEAsLCwwLEAwMEBcPDQ8XGxQQEBQbHxcXFxcXHx4XGhoaGhceHiMlJyUjHi8vMzMvL0BAQEBAQEBAQE") + "BAQEBAQAERDw8RExEVEhIVFBEUERQaFBYWFBomGhocGhomMCMeHh4eIzArLicnJy4rNTUwMDU1QEA\/Q") + "EBAQEBAQEBAQEBA\/8AAEQgAOQA5AwEiAAIRAQMRAf\/EAI8AAAICAwEAAAAAAAAAAAAAAAUGAAQBAgcD") + "AQEBAQEBAAAAAAAAAAAAAAAFAwQBAhAAAQMDAAUHCgcAAAAAAAAAAQACAxEEBSExQRITUWGBkSJCBnG") + "hscHRMlJyIzPhYpKyUxQWEQACAQMCAwcFAQAAAAAAAAABAhEAEgMTBCFBUWGBocEiQhQxcZEycpL\/2g") + "AMAwEAAhEDEQA\/AOgKnf5O1sGVldV592Nulx9imUyDLC2Mp0yO7MTeV3sCTZppZ5HSyuL5HGrnFattt") + "tT1NwQeNZdzudP0rxc+FE7nxHfykiHdgZsoN53W72KmcpkSam5k\/UR6FVWKhIrhxqICL+KObNkYyXb8") + "0RhzuTiNeNxB8LwHfiTWP8Q29yRFcAQSnQDXsOPl2dKVVF4ybbE4\/UKeq8K949zlQ\/sWHRuNdAWUA8P") + "5VzyLG4dV1PovOug7h9SPo74z6ul3zyt60j8lNLV7o53dKUvENy6bIGLuQANHlPacULVjIEm+uCdfFf") + "8AuKrpXEoXGijkoorKxbI7HmxoxhcK27b\/AGbmvArRjBo36ayTyJjjs7WJgZHCxrRs3QvPGtY3H24j9") + "3htPWKnzq0is+Z3dpJgGAKVwYURFgCSJJoRkcBbXDHSWzRDONIA0NceQjYlUgtJaRQg0I5wugpLzLWt") + "ydwG6t4HpIBK1bLMzEoxugSJrLvcKqA6i2TBiqkcj4pGyxmj2EOaecJj\/wBNb\/xuS0taBbbRcG5gR3G") + "sVxtK8iZ7xRPPW7oMlIaUbLSRvTr86HJvzWNN9bAx\/fiqWfmB1t6UoEFpIcKEaCDoIIUNrlD4wPcgtP") + "lV91iKZCfa5uHnTDgMtCyIWVy4MLT9J50NIPdJR\/XpC5+t2zztG62R7W8gcQFPNsg7Fla2eJETVMO9K") + "KFZbo4AzFOOQydvYxEvcHTU7EQ1k8\/IEmySPlkdLIaveS5x5ytSSTUmpOslRWwbdcQMG4n6mo59w2Ui") + "RaB9BUAJIDRUnQANpRr\/ADE\/xt6lPD2NdLML2UUijP069542+QelM65rrrjFPtP+uld0G0Dlj3D\/AD1") + "qIXk8HBekyxnhXB1u7rvmHrRRRGYdS8aU3dnnSebTsOrFvb5Uk3OKv7YniQuLR32Deb1hVCCDQihXQV") + "TuPvMSqnNHqGM\/ZiPKimGGfScg+6g+dJ8NrczmkMT3k8gNOtGsf4bcSJL40GyFp1\/M4epMLdSypZ\/k2") + "mwKP5Mt4xVcHxrheWP9CF8JrVrWsaGMAa1ooANAAC2UURfGe2lOEdlf\/9k=)";
   };
 });
-rtl.module("JWindow",["System","Classes","SysUtils","JS","Web","jElement","jPanel","jButton"],function () {
+rtl.module("pas2js.Window",["System","Classes","SysUtils","JS","Web","pas2js.Element","pas2js.Panel","pas2js.Button"],function () {
   "use strict";
   var $mod = this;
-  rtl.createClass($mod,"TWWindow",pas.jElement.TCustomControl,function () {
+  rtl.createClass($mod,"TWWindow",pas["pas2js.Element"].TCustomControl,function () {
     this.$init = function () {
-      pas.jElement.TCustomControl.$init.call(this);
+      pas["pas2js.Element"].TCustomControl.$init.call(this);
       this.WindowArea = null;
       this.CloseButton = null;
     };
     this.$final = function () {
       this.WindowArea = undefined;
       this.CloseButton = undefined;
-      pas.jElement.TCustomControl.$final.call(this);
+      pas["pas2js.Element"].TCustomControl.$final.call(this);
     };
     this.ArrangeElements = function () {
       var d = null;
@@ -3178,9 +3198,9 @@ rtl.module("JWindow",["System","Classes","SysUtils","JS","Web","jElement","jPane
       for (var $l3 = 0, $end4 = TempArray.length - 1; $l3 <= $end4; $l3++) {
         j = $l3;
         if (rtl.getObject(TempArray[j]).id !== this.WindowArea.FHandle.id) {
-          x = parseInt(pas.jElement.StrBefore(rtl.getObject(TempArray[j]).style.getPropertyValue("top"),"px"));
+          x = parseInt(pas["pas2js.Element"].StrBefore(rtl.getObject(TempArray[j]).style.getPropertyValue("top"),"px"));
           if (x <= 30) rtl.getObject(TempArray[j]).style.setProperty("top",pas.SysUtils.IntToStr(x + 30) + "px");
-          y = (parseInt(pas.jElement.StrBefore(rtl.getObject(TempArray[j]).style.getPropertyValue("top"),"px")) + parseInt(pas.jElement.StrBefore(rtl.getObject(TempArray[j]).style.getPropertyValue("height"),"px"))) + parseInt(pas.jElement.StrBefore(this.WindowArea.FHandle.style.getPropertyValue("margin-bottom"),"px"));
+          y = (parseInt(pas["pas2js.Element"].StrBefore(rtl.getObject(TempArray[j]).style.getPropertyValue("top"),"px")) + parseInt(pas["pas2js.Element"].StrBefore(rtl.getObject(TempArray[j]).style.getPropertyValue("height"),"px"))) + parseInt(pas["pas2js.Element"].StrBefore(this.WindowArea.FHandle.style.getPropertyValue("margin-bottom"),"px"));
           if (y > z) z = y;
           this.WindowArea.FHandle.appendChild(rtl.getObject(TempArray[j]));
         };
@@ -3192,19 +3212,19 @@ rtl.module("JWindow",["System","Classes","SysUtils","JS","Web","jElement","jPane
       function doCloseButtonOnClick(sender) {
         Self.CloseWIndow();
       };
-      pas.jElement.TCustomControl.Create$1.call(Self,"div",parent);
+      pas["pas2js.Element"].TCustomControl.Create$1.call(Self,"div",parent);
       Self.SetProperty("display","none");
       Self.SetProperty("background-color","rgb(255,255,255)");
       Self.SetProperty("background-color","rgba(0,0,0,0.4)");
       Self.FHandle.style.setProperty("width","100%");
       Self.FHandle.style.setProperty("height","100%");
-      Self.WindowArea = pas.jPanel.TWPanel.$create("Create$2",[Self]);
+      Self.WindowArea = pas["pas2js.Panel"].TWPanel.$create("Create$2",[Self]);
       Self.WindowArea.SetProperty("background-color","whitesmoke");
       Self.WindowArea.SetProperty("margin","10% 5% 5% 10%");
       Self.WindowArea.SetProperty("border","1px solid #888");
       Self.WindowArea.SetProperty("width","80%");
       Self.WindowArea.SetProperty("height","30%");
-      Self.CloseButton = pas.jButton.TWButton.$create("Create$2",[Self.WindowArea]);
+      Self.CloseButton = pas["pas2js.Button"].TWButton.$create("Create$2",[Self.WindowArea]);
       Self.CloseButton.SetinnerHTML("x");
       Self.CloseButton.SetAttribute("style","margin: 2px 2px; float: right; cursor: pointer;");
       Self.CloseButton._setMouseClick(doCloseButtonOnClick);
@@ -3218,19 +3238,19 @@ rtl.module("JWindow",["System","Classes","SysUtils","JS","Web","jElement","jPane
     };
   });
 });
-rtl.module("jDialog",["System","Classes","SysUtils","JS","Web","jElement","jPanel","jButton"],function () {
+rtl.module("pas2js.Dialog",["System","Classes","SysUtils","JS","Web","pas2js.Element","pas2js.Panel","pas2js.Button"],function () {
   "use strict";
   var $mod = this;
-  rtl.createClass($mod,"TWDialog",pas.jElement.TCustomControl,function () {
+  rtl.createClass($mod,"TWDialog",pas["pas2js.Element"].TCustomControl,function () {
     this.$init = function () {
-      pas.jElement.TCustomControl.$init.call(this);
+      pas["pas2js.Element"].TCustomControl.$init.call(this);
       this.DialogBox = null;
       this.CloseButton = null;
     };
     this.$final = function () {
       this.DialogBox = undefined;
       this.CloseButton = undefined;
-      pas.jElement.TCustomControl.$final.call(this);
+      pas["pas2js.Element"].TCustomControl.$final.call(this);
     };
     this.ArrangeElements = function () {
       var d = null;
@@ -3249,9 +3269,9 @@ rtl.module("jDialog",["System","Classes","SysUtils","JS","Web","jElement","jPane
       for (var $l3 = 0, $end4 = TempArray.length - 1; $l3 <= $end4; $l3++) {
         j = $l3;
         if (rtl.getObject(TempArray[j]).id !== this.DialogBox.FHandle.id) {
-          x = pas.SysUtils.StrToInt(pas.jElement.StrBefore(rtl.getObject(TempArray[j]).style.getPropertyValue("top"),"px"));
+          x = pas.SysUtils.StrToInt(pas["pas2js.Element"].StrBefore(rtl.getObject(TempArray[j]).style.getPropertyValue("top"),"px"));
           if (x <= 30) rtl.getObject(TempArray[j]).style.setProperty("top",pas.SysUtils.IntToStr(x + 30) + "px");
-          y = pas.SysUtils.StrToInt(pas.jElement.StrBefore(rtl.getObject(TempArray[j]).style.getPropertyValue("top"),"px")) + pas.SysUtils.StrToInt(pas.jElement.StrBefore(rtl.getObject(TempArray[j]).style.getPropertyValue("height"),"px"));
+          y = pas.SysUtils.StrToInt(pas["pas2js.Element"].StrBefore(rtl.getObject(TempArray[j]).style.getPropertyValue("top"),"px")) + pas.SysUtils.StrToInt(pas["pas2js.Element"].StrBefore(rtl.getObject(TempArray[j]).style.getPropertyValue("height"),"px"));
           if (y > z) z = y;
           this.DialogBox.FHandle.appendChild(rtl.getObject(TempArray[j]));
         };
@@ -3263,19 +3283,19 @@ rtl.module("jDialog",["System","Classes","SysUtils","JS","Web","jElement","jPane
       function doCloseButtonOnClick(sender) {
         Self.SetProperty("display","none");
       };
-      pas.jElement.TCustomControl.Create$1.call(Self,"div",parent);
+      pas["pas2js.Element"].TCustomControl.Create$1.call(Self,"div",parent);
       Self.SetProperty("display","none");
       Self.SetProperty("background-color","rgb(0,0,0)");
       Self.SetProperty("background-color","rgba(0,0,0,0.4)");
       Self.FHandle.style.setProperty("width","100%");
       Self.FHandle.style.setProperty("height","100%");
-      Self.DialogBox = pas.jPanel.TWPanel.$create("Create$2",[Self]);
+      Self.DialogBox = pas["pas2js.Panel"].TWPanel.$create("Create$2",[Self]);
       Self.DialogBox.SetProperty("background-color","whitesmoke");
       Self.DialogBox.SetProperty("margin","10% 5% 0% 10%");
       Self.DialogBox.SetProperty("border","1px solid #888");
       Self.DialogBox.SetProperty("width","80%");
       Self.DialogBox.SetProperty("height","30%");
-      Self.CloseButton = pas.jButton.TWButton.$create("Create$2",[Self.DialogBox]);
+      Self.CloseButton = pas["pas2js.Button"].TWButton.$create("Create$2",[Self.DialogBox]);
       Self.CloseButton.SetinnerHTML("x");
       Self.CloseButton.SetAttribute("style","margin: 2px 2px; float: right; cursor: pointer;");
       Self.CloseButton._setMouseClick(doCloseButtonOnClick);
@@ -3286,17 +3306,17 @@ rtl.module("jDialog",["System","Classes","SysUtils","JS","Web","jElement","jPane
     };
   });
 });
-rtl.module("jInput",["System","Classes","SysUtils","JS","Web","jElement"],function () {
+rtl.module("pas2js.Input",["System","Classes","SysUtils","JS","Web","pas2js.Element"],function () {
   "use strict";
   var $mod = this;
-  rtl.createClass($mod,"TWInput",pas.jElement.TCustomControl,function () {
+  rtl.createClass($mod,"TWInput",pas["pas2js.Element"].TCustomControl,function () {
     this.Create$2 = function (parent) {
-      pas.jElement.TCustomControl.Create$1.call(this,"input",parent);
+      pas["pas2js.Element"].TCustomControl.Create$1.call(this,"input",parent);
       this.SetAttribute("type","text");
     };
   });
 });
-rtl.module("Form1",["System","Classes","SysUtils","Types","JS","Web","jElement","jForm","jListBox","jPanel","jButton","jImage","jToolBar","jProgressBar","JSplitter","JSelect","jVideo","JAnchor","JTextArea","jIframe","jFlipScroll","JLoader","jSpinner","jGrid","jCanvas","jTreeView","jCheckBox","jFieldSet","jRadioButton","JWindow","jDialog","jInput"],function () {
+rtl.module("Form1",["System","Classes","SysUtils","Types","JS","Web","pas2js.Element","pas2js.Form","pas2js.ListBox","pas2js.Panel","pas2js.Button","pas2js.Image","pas2js.ToolBar","pas2js.ProgressBar","pas2js.Splitter","pas2js.Select","pas2js.Video","pas2js.Anchor","pas2js.TextArea","pas2js.Iframe","pas2js.FlipScroll","pas2js.Loader","pas2js.Spinner","pas2js.Grid","pas2js.Canvas","pas2js.TreeView","pas2js.CheckBox","pas2js.FieldSet","pas2js.RadioButton","pas2js.Window","pas2js.Dialog","pas2js.Input"],function () {
   "use strict";
   var $mod = this;
   rtl.createClass($mod,"TComponentRec",pas.System.TObject,function () {
@@ -3310,9 +3330,9 @@ rtl.module("Form1",["System","Classes","SysUtils","Types","JS","Web","jElement",
       pas.System.TObject.$final.call(this);
     };
   });
-  rtl.createClass($mod,"TForm1",pas.jForm.TWForm,function () {
+  rtl.createClass($mod,"TForm1",pas["pas2js.Form"].TWForm,function () {
     this.$init = function () {
-      pas.jForm.TWForm.$init.call(this);
+      pas["pas2js.Form"].TWForm.$init.call(this);
       this.ToolBar = null;
       this.ListBox1 = null;
       this.Components = [];
@@ -3325,7 +3345,7 @@ rtl.module("Form1",["System","Classes","SysUtils","Types","JS","Web","jElement",
       this.Components = undefined;
       this.DisplayDiv = undefined;
       this.ComponentRec = undefined;
-      pas.jForm.TWForm.$final.call(this);
+      pas["pas2js.Form"].TWForm.$final.call(this);
     };
     this.populateListBox = function () {
       var Self = this;
@@ -3335,20 +3355,20 @@ rtl.module("Form1",["System","Classes","SysUtils","Types","JS","Web","jElement",
         var disp = null;
         while (Self.DisplayDiv.FHandle.firstChild != null) Self.DisplayDiv.FHandle.removeChild(Self.DisplayDiv.FHandle.firstChild);
         if (document.getElementById(Self.FHandle.getAttribute("data-select")) != null) document.getElementById(Self.FHandle.getAttribute("data-select")).style.setProperty("display","none");
-        Self.Components[pas.SysUtils.StrToInt(rtl.as(Sender,pas.jPanel.TWPanel).FTag)].ShowIt();
+        Self.Components[pas.SysUtils.StrToInt(rtl.as(Sender,pas["pas2js.Panel"].TWPanel).FTag)].ShowIt();
         disp = Self.DisplayDiv.FHandle.children.item(0).style;
         disp.setProperty("height","px");
-        Self.DisplayDiv.SetHeight(pas.SysUtils.StrToInt(pas.jElement.StrBefore(Self.DisplayDiv.FHandle.children.item(0).style.getPropertyValue("height"),"px")) + 30);
-        Self.DisplayDiv.SetWidth(pas.SysUtils.StrToInt(pas.jElement.StrBefore(Self.DisplayDiv.FHandle.children.item(0).style.getPropertyValue("width"),"px")) + 30);
+        Self.DisplayDiv.SetHeight(pas.SysUtils.StrToInt(pas["pas2js.Element"].StrBefore(Self.DisplayDiv.FHandle.children.item(0).style.getPropertyValue("height"),"px")) + 30);
+        Self.DisplayDiv.SetWidth(pas.SysUtils.StrToInt(pas["pas2js.Element"].StrBefore(Self.DisplayDiv.FHandle.children.item(0).style.getPropertyValue("width"),"px")) + 30);
         Self.DisplayDiv.SetTop(280);
       };
-      Self.ListBox1 = pas.jListBox.TWListBox.$create("Create$2",[Self]);
+      Self.ListBox1 = pas["pas2js.ListBox"].TWListBox.$create("Create$2",[Self]);
       Self.ListBox1.SetBounds(17,85,200,170);
       Self.ListBox1.SetProperty("background-color","white");
       Self.ListBox1.SetProperty("border","2px double whitesmoke");
       for (var $l1 = 0, $end2 = Self.Components.length - 1; $l1 <= $end2; $l1++) {
         i = $l1;
-        Panel0 = pas.jPanel.TWPanel.$create("Create$2",[Self.ListBox1]);
+        Panel0 = pas["pas2js.Panel"].TWPanel.$create("Create$2",[Self.ListBox1]);
         Panel0.SetProperty("background-color","whitesmoke");
         Panel0.SetBounds(2,2,170,22);
         Panel0.SetinnerHTML(Self.Components[i].name);
@@ -3359,14 +3379,14 @@ rtl.module("Form1",["System","Classes","SysUtils","Types","JS","Web","jElement",
       };
     };
     this.InitializeForm = function () {
-      pas.jForm.TWForm.InitializeForm.apply(this,arguments);
+      pas["pas2js.Form"].TWForm.InitializeForm.apply(this,arguments);
     };
     this.InitializeObject = function () {
       var Self = this;
       var Image0 = null;
       function doPanel1() {
         var Panel1 = null;
-        Panel1 = pas.jPanel.TWPanel.$create("Create$2",[Self.DisplayDiv]);
+        Panel1 = pas["pas2js.Panel"].TWPanel.$create("Create$2",[Self.DisplayDiv]);
         Panel1.SetBounds(0,0,100,100);
         Panel1.SetProperty("background-color","gold");
         Panel1.SetProperty("border","1px double grey");
@@ -3376,7 +3396,7 @@ rtl.module("Form1",["System","Classes","SysUtils","Types","JS","Web","jElement",
         function Button1OnClick(sender) {
           window.alert("clicked");
         };
-        Button1 = pas.jButton.TWButton.$create("Create$2",[Self.DisplayDiv]);
+        Button1 = pas["pas2js.Button"].TWButton.$create("Create$2",[Self.DisplayDiv]);
         Button1.SetBounds(0,0,100,50);
         Button1.SetinnerHTML("Button");
         Button1._setMouseClick(Button1OnClick);
@@ -3388,7 +3408,7 @@ rtl.module("Form1",["System","Classes","SysUtils","Types","JS","Web","jElement",
           Progress1.SetPerc(Progress1.GetPerc() + 1);
           if (Progress1.GetPerc() > 100) window.clearInterval(id);
         };
-        Progress1 = pas.jProgressBar.TWProgress.$create("Create$2",[Self.DisplayDiv]);
+        Progress1 = pas["pas2js.ProgressBar"].TWProgress.$create("Create$2",[Self.DisplayDiv]);
         Progress1.SetBounds(0,0,300,12);
         Progress1.SetProperty("background-color","lightgrey");
         Progress1.ProgressBar.SetProperty("background-color","salmon");
@@ -3397,7 +3417,7 @@ rtl.module("Form1",["System","Classes","SysUtils","Types","JS","Web","jElement",
       };
       function doImage1() {
         var Image1 = null;
-        Image1 = pas.jImage.TWImage.$create("Create$2",[Self.DisplayDiv]);
+        Image1 = pas["pas2js.Image"].TWImage.$create("Create$2",[Self.DisplayDiv]);
         Image1.SetBounds(0,0,194,45);
         Image1.SetAttribute("src","images\/logo.png");
       };
@@ -3405,21 +3425,21 @@ rtl.module("Form1",["System","Classes","SysUtils","Types","JS","Web","jElement",
         var Splitter1 = null;
         var Button1 = null;
         var Button2 = null;
-        Splitter1 = pas.JSplitter.TWSplitter.$create("Create$2",[Self.DisplayDiv]);
+        Splitter1 = pas["pas2js.Splitter"].TWSplitter.$create("Create$2",[Self.DisplayDiv]);
         Splitter1.SetBounds(0,0,300,200);
         Splitter1.PanelLeft.SetProperty("background-color","white");
         Splitter1.PanelRight.SetProperty("background-color","whitesmoke");
         Splitter1.SetProperty("border","1px solid silver");
-        Button1 = pas.jButton.TWButton.$create("Create$2",[Splitter1.PanelLeft]);
+        Button1 = pas["pas2js.Button"].TWButton.$create("Create$2",[Splitter1.PanelLeft]);
         Button1.SetinnerHTML("Left");
         Button1.SetBounds(20,20,60,30);
-        Button2 = pas.jButton.TWButton.$create("Create$2",[Splitter1.PanelRight]);
+        Button2 = pas["pas2js.Button"].TWButton.$create("Create$2",[Splitter1.PanelRight]);
         Button2.SetinnerHTML("Right");
         Button2.SetBounds(20,20,60,30);
       };
       function doJToolBar1() {
         var ToolBar1 = null;
-        ToolBar1 = pas.jToolBar.TWToolBar.$create("Create$2",[Self.DisplayDiv]);
+        ToolBar1 = pas["pas2js.ToolBar"].TWToolBar.$create("Create$2",[Self.DisplayDiv]);
         ToolBar1.SetBounds(0,0,500,40);
         ToolBar1.SetProperty("background-color","#699BCE");
         ToolBar1.AddMenu("Fish-Facts","Form3","white");
@@ -3430,11 +3450,11 @@ rtl.module("Form1",["System","Classes","SysUtils","Types","JS","Web","jElement",
         var Select1 = null;
         var Item1 = null;
         var i = 0;
-        Select1 = pas.JSelect.TWSelect.$create("Create$2",[Self.DisplayDiv]);
+        Select1 = pas["pas2js.Select"].TWSelect.$create("Create$2",[Self.DisplayDiv]);
         Select1.SetBounds(0,0,200,200);
         Select1.SetProperty("background-color","white");
         for (i = 1; i <= 15; i++) {
-          Item1 = pas.jPanel.TWPanel.$create("Create$2",[Select1]);
+          Item1 = pas["pas2js.Panel"].TWPanel.$create("Create$2",[Select1]);
           Item1.SetProperty("background-color","whitesmoke");
           Item1.SetHeight(20);
           Item1.SetinnerHTML("Item " + pas.SysUtils.IntToStr(i));
@@ -3446,7 +3466,7 @@ rtl.module("Form1",["System","Classes","SysUtils","Types","JS","Web","jElement",
         var Panel0 = null;
         var Colours = [];
         var i = 0;
-        Self.ListBox1 = pas.jListBox.TWListBox.$create("Create$2",[Self.DisplayDiv]);
+        Self.ListBox1 = pas["pas2js.ListBox"].TWListBox.$create("Create$2",[Self.DisplayDiv]);
         Self.ListBox1.SetBounds(0,0,200,1000);
         Self.ListBox1.SetProperty("background-color","white");
         Self.ListBox1.SetProperty("border","2px double whitesmoke");
@@ -3600,7 +3620,7 @@ rtl.module("Form1",["System","Classes","SysUtils","Types","JS","Web","jElement",
         Colours.push("YellowGreen");
         for (var $l1 = 0, $end2 = Colours.length - 1; $l1 <= $end2; $l1++) {
           i = $l1;
-          Panel0 = pas.jPanel.TWPanel.$create("Create$2",[Self.ListBox1]);
+          Panel0 = pas["pas2js.Panel"].TWPanel.$create("Create$2",[Self.ListBox1]);
           Panel0.SetProperty("background-color",Colours[i]);
           Panel0.SetinnerHTML(Colours[i]);
           Panel0.SetProperty("font-size","0.85em");
@@ -3610,7 +3630,7 @@ rtl.module("Form1",["System","Classes","SysUtils","Types","JS","Web","jElement",
       };
       function doJVideo1() {
         var Video1 = null;
-        Video1 = pas.jVideo.TWVideo.$create("Create$2",[Self.DisplayDiv]);
+        Video1 = pas["pas2js.Video"].TWVideo.$create("Create$2",[Self.DisplayDiv]);
         Video1.SetBounds(0,0,400,300);
         Video1.SetAttribute("src","videos\/looprake.mp4");
         Video1.SetAttribute("type","video\/mp4");
@@ -3621,7 +3641,7 @@ rtl.module("Form1",["System","Classes","SysUtils","Types","JS","Web","jElement",
       };
       function doJAnchor1() {
         var Anchor1 = null;
-        Anchor1 = pas.JAnchor.TWAnchor.$create("Create$2",[Self.DisplayDiv]);
+        Anchor1 = pas["pas2js.Anchor"].TWAnchor.$create("Create$2",[Self.DisplayDiv]);
         Anchor1.SetBounds(0,0,194,45);
         Anchor1.SetAttribute("href","https:\/\/www.youtube.com\/watch?v=9ehsFrakgAo");
         Anchor1.SetAttribute("target","_blank");
@@ -3631,7 +3651,7 @@ rtl.module("Form1",["System","Classes","SysUtils","Types","JS","Web","jElement",
       };
       function doJTextArea1() {
         var Memo1 = null;
-        Memo1 = pas.JTextArea.TWTextArea.$create("Create$2",[Self.DisplayDiv]);
+        Memo1 = pas["pas2js.TextArea"].TWTextArea.$create("Create$2",[Self.DisplayDiv]);
         Memo1.SetBounds(0,0,300,100);
         Memo1.SetProperty("background-color","whitesmoke");
         Memo1.SetProperty("border","1px double grey");
@@ -3639,7 +3659,7 @@ rtl.module("Form1",["System","Classes","SysUtils","Types","JS","Web","jElement",
       };
       function doJIFrame1() {
         var IFrame1 = null;
-        IFrame1 = pas.jIframe.TWIFrame.$create("Create$2",[Self.DisplayDiv]);
+        IFrame1 = pas["pas2js.Iframe"].TWIFrame.$create("Create$2",[Self.DisplayDiv]);
         IFrame1.SetBounds(0,0,650,500);
         IFrame1.SetAttribute("src","http:\/\/pas2js.38893.n8.nabble.com");
       };
@@ -3652,11 +3672,11 @@ rtl.module("Form1",["System","Classes","SysUtils","Types","JS","Web","jElement",
           PageNr += 1;
           FlipScroll.GotoPage(PageNr);
         };
-        FlipScroll = pas.jFlipScroll.TWFlipScroll.$create("Create$2",[Self.DisplayDiv]);
+        FlipScroll = pas["pas2js.FlipScroll"].TWFlipScroll.$create("Create$2",[Self.DisplayDiv]);
         FlipScroll.SetBounds(0,0,450,450);
         encodestr = encodeURIComponent("http:\/\/www.symphonyone.com\/");
         FlipScroll.SetAttribute("src","https:\/\/rawcdn.githack.com\/pas2js\/master\/master\/projATM\/www\/index.html");
-        ClickPanel = pas.jPanel.TWPanel.$create("Create$2",[Self.DisplayDiv]);
+        ClickPanel = pas["pas2js.Panel"].TWPanel.$create("Create$2",[Self.DisplayDiv]);
         ClickPanel.SetBounds(0,0,FlipScroll.GetWidth(),FlipScroll.GetHeight());
         ClickPanel.SetProperty("opacity","0");
         PageNr = 0;
@@ -3664,12 +3684,12 @@ rtl.module("Form1",["System","Classes","SysUtils","Types","JS","Web","jElement",
       };
       function doJLoader1() {
         var Loader1 = null;
-        Loader1 = pas.JLoader.TWLoader.$create("Create$2",[Self.DisplayDiv]);
+        Loader1 = pas["pas2js.Loader"].TWLoader.$create("Create$2",[Self.DisplayDiv]);
         Loader1.SetBounds(0,0,60,60);
       };
       function doJSpinner1() {
         var Spinner1 = null;
-        Spinner1 = pas.jSpinner.TWSpinner.$create("Create$2",[Self.DisplayDiv]);
+        Spinner1 = pas["pas2js.Spinner"].TWSpinner.$create("Create$2",[Self.DisplayDiv]);
         Spinner1.SetBounds(20,0,40,40);
       };
       function doJGrid1() {
@@ -3680,12 +3700,12 @@ rtl.module("Form1",["System","Classes","SysUtils","Types","JS","Web","jElement",
         var CellPnl = null;
         var CellImg = null;
         function CellPnlOnClick(Sender) {
-          window.alert(rtl.as(Sender,pas.jElement.TCustomControl).FTag);
+          window.alert(rtl.as(Sender,pas["pas2js.Element"].TCustomControl).FTag);
         };
         function CellImgOnClick(Sender) {
-          window.alert(rtl.as(Sender,pas.jElement.TCustomControl).FTag);
+          window.alert(rtl.as(Sender,pas["pas2js.Element"].TCustomControl).FTag);
         };
-        Grid1 = pas.jGrid.TWGrid.$create("Create$2",[Self.DisplayDiv]);
+        Grid1 = pas["pas2js.Grid"].TWGrid.$create("Create$2",[Self.DisplayDiv]);
         Grid1.SetBounds(0,0,330,250);
         Grid1.CanResize = true;
         Grid1.AddColumn("Col 1",74);
@@ -3696,7 +3716,7 @@ rtl.module("Form1",["System","Classes","SysUtils","Types","JS","Web","jElement",
             S = (("Cell " + pas.SysUtils.IntToStr(row)) + "-") + pas.SysUtils.IntToStr(column);
             var $tmp1 = column;
             if (($tmp1 === 1) || ($tmp1 === 3)) {
-              CellPnl = pas.jPanel.TWPanel.$create("Create$2",[Grid1]);
+              CellPnl = pas["pas2js.Panel"].TWPanel.$create("Create$2",[Grid1]);
               CellPnl.SetinnerHTML(S);
               CellPnl.SetHeight(24);
               CellPnl.SetProperty("font-size","0.85em");
@@ -3704,7 +3724,7 @@ rtl.module("Form1",["System","Classes","SysUtils","Types","JS","Web","jElement",
               CellPnl._setMouseClick(CellPnlOnClick);
               Grid1.AddCell(row,column,CellPnl);
             } else if ($tmp1 === 2) {
-              CellImg = pas.jImage.TWImage.$create("Create$2",[Grid1]);
+              CellImg = pas["pas2js.Image"].TWImage.$create("Create$2",[Grid1]);
               CellImg.SetAttribute("src","images\/logo.png");
               CellImg.SetHeight(45);
               CellImg.FTag = S;
@@ -3716,7 +3736,7 @@ rtl.module("Form1",["System","Classes","SysUtils","Types","JS","Web","jElement",
       };
       function doJCanvas1() {
         var Canvas1 = null;
-        Canvas1 = pas.jCanvas.TWCanvas.$create("Create$2",[Self.DisplayDiv]);
+        Canvas1 = pas["pas2js.Canvas"].TWCanvas.$create("Create$2",[Self.DisplayDiv]);
         Canvas1.SetBounds(0,0,400,200);
         Canvas1.ctx.beginPath();
         Canvas1.ctx.moveTo(75,25);
@@ -3730,7 +3750,7 @@ rtl.module("Form1",["System","Classes","SysUtils","Types","JS","Web","jElement",
       };
       function doJTreeView1() {
         var TreeView1 = null;
-        TreeView1 = pas.jTreeView.TWTreeView.$create("Create$2",[Self.DisplayDiv]);
+        TreeView1 = pas["pas2js.TreeView"].TWTreeView.$create("Create$2",[Self.DisplayDiv]);
         TreeView1.SetBounds(0,0,250,200);
         TreeView1.SetProperty("background-color","white");
         TreeView1.Subject = "Job roles";
@@ -3746,7 +3766,7 @@ rtl.module("Form1",["System","Classes","SysUtils","Types","JS","Web","jElement",
       };
       function doJCheckBox1() {
         var CheckBox1 = null;
-        CheckBox1 = pas.jCheckBox.TWCheckBox.$create("Create$2",[Self.DisplayDiv]);
+        CheckBox1 = pas["pas2js.CheckBox"].TWCheckBox.$create("Create$2",[Self.DisplayDiv]);
         CheckBox1.SetBounds(0,0,200,200);
         CheckBox1.Label = "First and only checkbox";
         CheckBox1.Checked = true;
@@ -3757,16 +3777,16 @@ rtl.module("Form1",["System","Classes","SysUtils","Types","JS","Web","jElement",
         var CheckBox1 = null;
         var CheckBox2 = null;
         var CheckBox3 = null;
-        FieldSet = pas.jFieldSet.TWFieldSet.$create("Create$2",[Self.DisplayDiv]);
+        FieldSet = pas["pas2js.FieldSet"].TWFieldSet.$create("Create$2",[Self.DisplayDiv]);
         FieldSet.SetBounds(0,0,200,180);
         FieldSet.Legend = "Legend";
-        CheckBox1 = pas.jCheckBox.TWCheckBox.$create("Create$2",[FieldSet]);
+        CheckBox1 = pas["pas2js.CheckBox"].TWCheckBox.$create("Create$2",[FieldSet]);
         CheckBox1.Label = "First checkbox";
         CheckBox1.Checked = true;
-        CheckBox2 = pas.jCheckBox.TWCheckBox.$create("Create$2",[FieldSet]);
+        CheckBox2 = pas["pas2js.CheckBox"].TWCheckBox.$create("Create$2",[FieldSet]);
         CheckBox2.Label = "Second checkbox";
         CheckBox2.Checked = false;
-        CheckBox3 = pas.jCheckBox.TWCheckBox.$create("Create$2",[FieldSet]);
+        CheckBox3 = pas["pas2js.CheckBox"].TWCheckBox.$create("Create$2",[FieldSet]);
         CheckBox3.Label = "Third checkbox";
         CheckBox3.Checked = true;
       };
@@ -3775,15 +3795,15 @@ rtl.module("Form1",["System","Classes","SysUtils","Types","JS","Web","jElement",
         var RadioButton1 = null;
         var RadioButton2 = null;
         var RadioButton3 = null;
-        FieldSet = pas.jFieldSet.TWFieldSet.$create("Create$2",[Self.DisplayDiv]);
+        FieldSet = pas["pas2js.FieldSet"].TWFieldSet.$create("Create$2",[Self.DisplayDiv]);
         FieldSet.SetBounds(0,0,200,180);
         FieldSet.Legend = "Legend";
-        RadioButton1 = pas.jRadioButton.TWRadioButton.$create("Create$2",[FieldSet]);
+        RadioButton1 = pas["pas2js.RadioButton"].TWRadioButton.$create("Create$2",[FieldSet]);
         RadioButton1.Label = "First RadioButton";
-        RadioButton2 = pas.jRadioButton.TWRadioButton.$create("Create$2",[FieldSet]);
+        RadioButton2 = pas["pas2js.RadioButton"].TWRadioButton.$create("Create$2",[FieldSet]);
         RadioButton2.Label = "Second RadioButton";
         RadioButton2.Checked = true;
-        RadioButton3 = pas.jRadioButton.TWRadioButton.$create("Create$2",[FieldSet]);
+        RadioButton3 = pas["pas2js.RadioButton"].TWRadioButton.$create("Create$2",[FieldSet]);
         RadioButton3.Label = "Third RadioButton";
       };
       function doTWindow1() {
@@ -3798,24 +3818,24 @@ rtl.module("Form1",["System","Classes","SysUtils","Types","JS","Web","jElement",
           function doButton1OnClick(Sender) {
             RadioButton1.FHandle.click();
           };
-          FieldSet = pas.jFieldSet.TWFieldSet.$create("Create$2",[Window1]);
+          FieldSet = pas["pas2js.FieldSet"].TWFieldSet.$create("Create$2",[Window1]);
           FieldSet.SetBounds(10,0,200,140);
           FieldSet.Legend = "Legend";
-          RadioButton1 = pas.jRadioButton.TWRadioButton.$create("Create$2",[FieldSet]);
+          RadioButton1 = pas["pas2js.RadioButton"].TWRadioButton.$create("Create$2",[FieldSet]);
           RadioButton1.Label = "First RadioButton";
-          RadioButton2 = pas.jRadioButton.TWRadioButton.$create("Create$2",[FieldSet]);
+          RadioButton2 = pas["pas2js.RadioButton"].TWRadioButton.$create("Create$2",[FieldSet]);
           RadioButton2.Label = "Second RadioButton";
           RadioButton2.Checked = true;
-          RadioButton3 = pas.jRadioButton.TWRadioButton.$create("Create$2",[FieldSet]);
+          RadioButton3 = pas["pas2js.RadioButton"].TWRadioButton.$create("Create$2",[FieldSet]);
           RadioButton3.Label = "Third RadioButton";
-          Button1 = pas.jButton.TWButton.$create("Create$2",[Window1]);
+          Button1 = pas["pas2js.Button"].TWButton.$create("Create$2",[Window1]);
           Button1.SetBounds(15,200,150,40);
           Button1.SetinnerHTML("check first radiobutton");
           Button1._setMouseClick(doButton1OnClick);
           Window1.OpenWindow();
         };
-        Window1 = pas.JWindow.TWWindow.$create("Create$2",[Self]);
-        MyButton = pas.jButton.TWButton.$create("Create$2",[Self.DisplayDiv]);
+        Window1 = pas["pas2js.Window"].TWWindow.$create("Create$2",[Self]);
+        MyButton = pas["pas2js.Button"].TWButton.$create("Create$2",[Self.DisplayDiv]);
         MyButton.SetBounds(0,0,150,40);
         MyButton.SetinnerHTML("Open window");
         MyButton.SetProperty("background-color","blueviolet");
@@ -3826,7 +3846,7 @@ rtl.module("Form1",["System","Classes","SysUtils","Types","JS","Web","jElement",
         var MyButton = null;
         function doMyButtonOnClick(Sender) {
           var Canvas1 = null;
-          Canvas1 = pas.jCanvas.TWCanvas.$create("Create$2",[Dialog1]);
+          Canvas1 = pas["pas2js.Canvas"].TWCanvas.$create("Create$2",[Dialog1]);
           Canvas1.SetBounds(0,0,400,200);
           Canvas1.ctx.beginPath();
           Canvas1.ctx.moveTo(75,25);
@@ -3839,8 +3859,8 @@ rtl.module("Form1",["System","Classes","SysUtils","Types","JS","Web","jElement",
           Canvas1.ctx.stroke();
           Dialog1.OpenDialog("testing...");
         };
-        Dialog1 = pas.jDialog.TWDialog.$create("Create$2",[Self]);
-        MyButton = pas.jButton.TWButton.$create("Create$2",[Self.DisplayDiv]);
+        Dialog1 = pas["pas2js.Dialog"].TWDialog.$create("Create$2",[Self]);
+        MyButton = pas["pas2js.Button"].TWButton.$create("Create$2",[Self.DisplayDiv]);
         MyButton.SetBounds(0,0,150,40);
         MyButton.SetinnerHTML("Open dialog");
         MyButton.SetProperty("background-color","blueviolet");
@@ -3886,10 +3906,10 @@ rtl.module("Form1",["System","Classes","SysUtils","Types","JS","Web","jElement",
            else if ($tmp1 === "url") Input1.SetAttribute("placeholder","http:\/\/www.lynkfs.com");
           MySelect.FHandle.style.setProperty("display","none");
         };
-        Input1 = pas.jInput.TWInput.$create("Create$2",[Self.DisplayDiv]);
+        Input1 = pas["pas2js.Input"].TWInput.$create("Create$2",[Self.DisplayDiv]);
         Input1.SetBounds(0,0,200,40);
         Input1.SetProperty("border","2px solid whitesmoke");
-        MySelect = pas.JSelect.TWSelect.$create("Create$2",[Self]);
+        MySelect = pas["pas2js.Select"].TWSelect.$create("Create$2",[Self]);
         Self.FHandle.setAttribute("data-select",MySelect.FHandle.id);
         MySelect.SetBounds(17,290,200,200);
         MySelect.SetProperty("background-color","white");
@@ -3918,7 +3938,7 @@ rtl.module("Form1",["System","Classes","SysUtils","Types","JS","Web","jElement",
         Types.push("week");
         for (var $l1 = 0, $end2 = Types.length - 1; $l1 <= $end2; $l1++) {
           i = $l1;
-          Item1 = pas.jPanel.TWPanel.$create("Create$2",[MySelect]);
+          Item1 = pas["pas2js.Panel"].TWPanel.$create("Create$2",[MySelect]);
           Item1.SetProperty("background-color","whitesmoke");
           Item1.SetHeight(20);
           Item1.SetinnerHTML(Types[i]);
@@ -3927,11 +3947,11 @@ rtl.module("Form1",["System","Classes","SysUtils","Types","JS","Web","jElement",
           MySelect.Add(Item1);
         };
       };
-      pas.jForm.TWForm.InitializeObject.apply(Self,arguments);
-      Image0 = pas.jImage.TWImage.$create("Create$2",[Self]);
+      pas["pas2js.Form"].TWForm.InitializeObject.apply(Self,arguments);
+      Image0 = pas["pas2js.Image"].TWImage.$create("Create$2",[Self]);
       Image0.SetBounds(0,0,194,45);
       Image0.SetAttribute("src","images\/logo.png");
-      Self.ToolBar = pas.jToolBar.TWToolBar.$create("Create$2",[Self]);
+      Self.ToolBar = pas["pas2js.ToolBar"].TWToolBar.$create("Create$2",[Self]);
       Self.ToolBar.SetBounds(0,45,0,40);
       Self.ToolBar.SetProperty("min-width","100%");
       Self.ToolBar.SetProperty("background-color","#699BCE");
@@ -3939,7 +3959,7 @@ rtl.module("Form1",["System","Classes","SysUtils","Types","JS","Web","jElement",
       Self.ToolBar.AddMenu("Projects","Form2","white");
       Self.ToolBar.SetActiveMenu("Form1");
       Self.Components.length = 0;
-      Self.DisplayDiv = pas.jPanel.TWPanel.$create("Create$2",[Self]);
+      Self.DisplayDiv = pas["pas2js.Panel"].TWPanel.$create("Create$2",[Self]);
       Self.DisplayDiv.SetBounds(20,300,0,0);
       Self.ComponentRec = $mod.TComponentRec.$create("Create");
       Self.ComponentRec.name = "JPanel";
@@ -4040,16 +4060,16 @@ rtl.module("Form1",["System","Classes","SysUtils","Types","JS","Web","jElement",
       Self.populateListBox();
     };
     this.ReSize = function () {
-      pas.jForm.TWForm.ReSize.apply(this,arguments);
+      pas["pas2js.Form"].TWForm.ReSize.apply(this,arguments);
     };
   });
 });
-rtl.module("program",["System","Classes","SysUtils","JS","Web","jApplication","Form1","JSplitter"],function () {
+rtl.module("program",["System","Classes","SysUtils","JS","Web","pas2js.Application","Form1","pas2js.Splitter"],function () {
   "use strict";
   var $mod = this;
   $mod.$main = function () {
-    pas.jApplication.Application.CreateForm("Form1",pas.Form1.TForm1);
-    pas.jApplication.Application.GoToForm("Form1");
+    pas["pas2js.Application"].Application.CreateForm("Form1",pas.Form1.TForm1);
+    pas["pas2js.Application"].Application.GoToForm("Form1");
   };
 });
 //# sourceMappingURL=project1.js.map

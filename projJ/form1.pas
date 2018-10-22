@@ -6,10 +6,10 @@ interface
 
 uses
   Classes, SysUtils, types, JS, Web,
-  JElement, JForm, JListBox, JPanel, JButton, JImage, JToolBar, JProgressBar,
-  JSplitter, JSelect, JVideo, JAnchor, JTextArea, JIFrame, JFlipScroll, JLoader,
-  JSpinner, JGrid, JCanvas, JTreeView, JCheckBox, JFieldSet, JRadioButton,
-  JWindow, JDialog, JInput;
+  pas2js.Element, pas2js.Form, pas2js.ListBox, pas2js.Panel, pas2js.Button, pas2js.Image, pas2js.ToolBar, pas2js.ProgressBar, pas2js.Splitter, 
+  pas2js.Select, pas2js.Video, pas2js.Anchor, pas2js.TextArea, pas2js.IFrame, pas2js.FlipScroll, pas2js.Loader, pas2js.Spinner, pas2js.Grid, 
+  pas2js.Canvas, pas2js.TreeView, pas2js.CheckBox, pas2js.FieldSet, 
+  pas2js.RadioButton, pas2js.Window, pas2js.Dialog, pas2js.Input;
 
 type
   TProcedure = procedure of object;
